@@ -19,6 +19,18 @@
     </a>
 </div>
 
+@if (showUpdatedMessage && UpdatedId is not null)
+{
+    <div class="alert alert-success d-flex align-items-center justify-content-between gap-3" role="alert">
+        <span>
+            <i class="bi bi-check-circle-fill me-2" aria-hidden="true"></i>
+            Application #@UpdatedId was updated successfully.
+        </span>
+        <button type="button" class="btn-close" aria-label="Close"
+                @onclick="() => showUpdatedMessage = false"></button>
+    </div>
+}
+
 @if (isLoading)
 {
     <LoadingIndicator Message="Loading student applications..." />
@@ -37,14 +49,20 @@ else if (applications.Count == 0)
 }
 else
 {
-    <StudentApplicationList Applications="applications" OnEdit="HandleEdit" />
+    <StudentApplicationList Applications="applications"
+                            HighlightedId="UpdatedId"
+                            OnEdit="HandleEdit" />
 }
 
 @code {
+    [SupplyParameterFromQuery(Name = "updated")]
+    public int? UpdatedId { get; set; }
+
     private List<StudentApplication> applications = new();
 
     private bool isLoading = true;
     private bool hasError;
+    private bool showUpdatedMessage = true;
 
     protected override async Task OnInitializedAsync()
     {

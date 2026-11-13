@@ -1,0 +1,121 @@
+﻿@page "/student-applications/edit/{Id:int}"
+@rendermode InteractiveServer
+@using System.Globalization
+@inject IStudentApplicationService ApplicationService
+@inject NavigationManager Navigation
+@inject ILogger<EditStudentApplication> Logger
+
+<PageTitle>Edit Application</PageTitle>
+
+<h1 class="mb-4">Edit Application <span class="text-muted fs-4">#@Id</span></h1>
+
+@if (isLoading)
+{
+    <LoadingIndicator Message="Loading application..." />
+}
+else if (hasLoadError)
+{
+    <ErrorAlert Message="Unable to retrieve the application. Please try again later."
+                OnRetry="LoadApplicationAsync" />
+}
+else if (application is null)
+{
+    <div class="alert alert-warning">
+        Application #@Id was not found.
+        <a href="student-applications" class="alert-link">Back to applications</a>
+    </div>
+}
+else
+{
+    @if (hasSaveError)
+    {
+        <ErrorAlert Message="Unable to save changes. Please try again." />
+    }
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <p class="text-muted mb-4">
+                <i class="bi bi-calendar-event me-1" aria-hidden="true"></i>
+                Application date:
+                @(originalApplicationDate?.ToString("dd MMM yyyy", CultureInfo.InvariantCulture) ?? "Not stored by the API")
+            </p>
+
+            <StudentApplicationForm Model="application"
+                                    SubmitText="Save changes"
+                                    IsSubmitting="isSaving"
+                                    ShowApplicationDate="false"
+                                    OnValidSubmit="HandleSubmitAsync" />
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private StudentApplication? application;
+    private DateTime? originalApplicationDate;
+
+    private bool isLoading = true;
+    private bool hasLoadError;
+    private bool isSaving;
+    private bool hasSaveError;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadApplicationAsync();
+    }
+
+    private async Task LoadApplicationAsync()
+    {
+        isLoading = true;
+        hasLoadError = false;
+
+        try
+        {
+            application = await ApplicationService.GetByIdAsync(Id);
+
+            if (application is not null)
+            {
+                originalApplicationDate = application.ApplicationDate;
+
+                // The API does not return applicationDate. A placeholder is used only to satisfy
+                // validation of the hidden field; an existing date is never overwritten.
+                application.ApplicationDate ??= DateTime.Today;
+
+                // The API rejects null for personalStatement
+                application.PersonalStatement ??= string.Empty;
+            }
+        }
+        catch (Exception ex)
+        {
+            hasLoadError = true;
+            Logger.LogError(ex, "Failed to load student application {Id}", Id);
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task HandleSubmitAsync(StudentApplication model)
+    {
+        isSaving = true;
+        hasSaveError = false;
+
+        try
+        {
+            await ApplicationService.UpdateAsync(Id, model);
+            Navigation.NavigateTo($"student-applications?updated={Id}");
+        }
+        catch (Exception ex)
+        {
+            hasSaveError = true;
+            Logger.LogError(ex, "Failed to update student application {Id}", Id);
+        }
+        finally
+        {
+            isSaving = false;
+        }
+    }
+}

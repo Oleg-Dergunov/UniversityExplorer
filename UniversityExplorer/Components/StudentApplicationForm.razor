@@ -42,14 +42,6 @@
                     <option value="@university.Name"></option>
                 }
             </datalist>
-            @if (isLoadingUniversities)
-            {
-                <div class="form-text">Loading university suggestions...</div>
-            }
-            else if (universitySuggestions.Count > 0)
-            {
-                <div class="form-text">@universitySuggestions.Count suggestions available. Start typing to filter.</div>
-            }
             <ValidationMessage For="() => Model.UniversityName" />
         </div>
 
@@ -59,11 +51,14 @@
             <ValidationMessage For="() => Model.CourseName" />
         </div>
 
-        <div class="col-md-6">
-            <label for="applicationDate" class="form-label">Application Date</label>
-            <InputDate id="applicationDate" class="form-control" @bind-Value="Model.ApplicationDate" />
-            <ValidationMessage For="() => Model.ApplicationDate" />
-        </div>
+        @if (ShowApplicationDate)
+        {
+            <div class="col-md-6">
+                <label for="applicationDate" class="form-label">Application Date</label>
+                <InputDate id="applicationDate" class="form-control" @bind-Value="Model.ApplicationDate" />
+                <ValidationMessage For="() => Model.ApplicationDate" />
+            </div>
+        }
 
         <div class="col-12">
             <label for="personalStatement" class="form-label">
@@ -91,7 +86,6 @@
     private List<Country> countries = new();
     private List<University> universitySuggestions = new();
     private string? suggestionsLoadedFor;
-    private bool isLoadingUniversities;
 
     [Parameter, EditorRequired]
     public StudentApplication Model { get; set; } = default!;
@@ -105,12 +99,15 @@
     [Parameter]
     public string CancelUrl { get; set; } = "student-applications";
 
+    // The application date is set once on creation and is not editable afterwards
+    [Parameter]
+    public bool ShowApplicationDate { get; set; } = true;
+
     [Parameter]
     public EventCallback<StudentApplication> OnValidSubmit { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        // Suggestions are optional: the form must still work if the Countries API is down
         try
         {
             countries = await CountryService.GetAllCountriesAsync();
@@ -140,8 +137,6 @@
             return;
         }
 
-        isLoadingUniversities = true;
-
         try
         {
             universitySuggestions = await UniversityService.GetUniversitiesByCountryAsync(match.Name);
@@ -151,10 +146,6 @@
         {
             universitySuggestions = new();
             Logger.LogWarning(ex, "University suggestions are unavailable for {Country}", match.Name);
-        }
-        finally
-        {
-            isLoadingUniversities = false;
         }
     }
 
