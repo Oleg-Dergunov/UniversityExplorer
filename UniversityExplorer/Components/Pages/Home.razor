@@ -1,7 +1,63 @@
 ﻿@page "/"
 
-<PageTitle>Home</PageTitle>
+<PageTitle>Home - University Explorer Portal</PageTitle>
 
-<h1>Hello, world!</h1>
+<section class="py-4">
+    <h1 class="display-5 fw-bold">University Explorer Portal</h1>
+    <p class="lead text-muted">
+        Explore universities around the world and manage your university applications in one place.
+    </p>
+</section>
 
-Welcome to your new app.
+<div class="row g-4">
+    <div class="col-12 col-md-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body d-flex flex-column">
+                <h2 class="h5 card-title">
+                    <i class="bi bi-globe-americas me-2" aria-hidden="true"></i>University Explorer
+                </h2>
+                <p class="card-text">
+                    Select a country to see its details, then browse, search and inspect its universities.
+                </p>
+                <a href="university-explorer" class="btn btn-primary mt-auto">Explore universities</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body d-flex flex-column">
+                <h2 class="h5 card-title">
+                    <i class="bi bi-card-list me-2" aria-hidden="true"></i>Student Applications
+                </h2>
+                <p class="card-text">
+                    View all submitted applications and edit existing ones.
+                </p>
+                <a href="student-applications" class="btn btn-outline-primary mt-auto">View applications</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body d-flex flex-column">
+                <h2 class="h5 card-title">
+                    <i class="bi bi-plus-square me-2" aria-hidden="true"></i>New Application
+                </h2>
+                <p class="card-text">
+                    Apply to a university programme by submitting a new application.
+                </p>
+                <a href="student-applications/create" class="btn btn-outline-primary mt-auto">Create application</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="mt-5">
+    <h2 class="h4">Data sources</h2>
+    <ul class="list-unstyled">
+        <li><strong>Countries API</strong> (countries.dev): country list and details</li>
+        <li><strong>Universities API</strong> (Hipolabs): universities by country</li>
+        <li><strong>Student Application API</strong> (Edutots): view, create and edit applications</li>
+    </ul>
+</section>
