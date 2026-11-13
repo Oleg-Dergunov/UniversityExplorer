@@ -92,7 +92,9 @@ else
             }
             @if (selectedUniversity is not null)
             {
-                <UniversityDetails University="selectedUniversity" OnClose="CloseUniversityDetails" />
+                <UniversityDetails University="selectedUniversity"
+                                   Country="selectedCountry"
+                                   OnClose="CloseUniversityDetails" />
             }
         </div>
     </div>

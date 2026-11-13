@@ -20,7 +20,25 @@
                     <dd class="col-sm-8">@University.Name</dd>
 
                     <dt class="col-sm-4">Country</dt>
-                    <dd class="col-sm-8">@University.Country</dd>
+                    <dd class="col-sm-8">
+                        @if (!string.IsNullOrWhiteSpace(Country?.Flags?.Png))
+                        {
+                            <img src="@Country.Flags.Png" alt="" class="details-flag me-2" />
+                        }
+                        @University.Country
+                        @if (!string.IsNullOrWhiteSpace(Country?.Region))
+                        {
+                            <small class="text-muted d-block">
+                                @Country.Region@(string.IsNullOrWhiteSpace(Country.Subregion) ? "" : $" · {Country.Subregion}")
+                            </small>
+                        }
+                    </dd>
+
+                    @if (!string.IsNullOrWhiteSpace(University.AlphaTwoCode))
+                    {
+                        <dt class="col-sm-4">Country code</dt>
+                        <dd class="col-sm-8">@University.AlphaTwoCode</dd>
+                    }
 
                     @if (!string.IsNullOrWhiteSpace(University.StateProvince))
                     {
@@ -48,12 +66,9 @@
             </div>
 
             <div class="modal-footer">
-                @if (!string.IsNullOrWhiteSpace(University.Website))
-                {
-                    <a href="@University.Website" target="_blank" rel="noopener noreferrer" class="btn btn-primary">
-                        <i class="bi bi-box-arrow-up-right me-1" aria-hidden="true"></i>Visit website
-                    </a>
-                }
+                <a href="@ApplyUrl" class="btn btn-primary">
+                    <i class="bi bi-send me-1" aria-hidden="true"></i>Apply to this university
+                </a>
                 <button type="button" class="btn btn-outline-secondary" @onclick="CloseAsync">Close</button>
             </div>
         </div>
@@ -68,11 +83,18 @@
     public University University { get; set; } = default!;
 
     [Parameter]
+    public Country? Country { get; set; }
+
+    [Parameter]
     public EventCallback OnClose { get; set; }
+
+    private string ApplyUrl =>
+        $"student-applications/create" +
+        $"?country={Uri.EscapeDataString(Country?.Name ?? University.Country)}" +
+        $"&university={Uri.EscapeDataString(University.Name)}";
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        // Focus the modal so that the Escape key works immediately
         if (firstRender)
         {
             await modalElement.FocusAsync();
