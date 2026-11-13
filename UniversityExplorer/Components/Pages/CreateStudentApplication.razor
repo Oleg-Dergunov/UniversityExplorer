@@ -1,0 +1,84 @@
+﻿@page "/student-applications/create"
+@rendermode InteractiveServer
+@inject IStudentApplicationService ApplicationService
+@inject ILogger<CreateStudentApplication> Logger
+
+<PageTitle>Create Student Application</PageTitle>
+
+<h1 class="mb-4">Create Student Application</h1>
+
+@if (submittedApplication is not null)
+{
+    <div class="alert alert-success d-flex align-items-start justify-content-between gap-3" role="alert">
+        <div>
+            <i class="bi bi-check-circle-fill me-2" aria-hidden="true"></i>
+            Application for <strong>@submittedApplication.StudentName</strong>
+            to <strong>@submittedApplication.UniversityName</strong> was submitted successfully.
+            <a href="student-applications" class="alert-link ms-1">View all applications</a>
+        </div>
+        <button type="button" class="btn-close" aria-label="Close"
+                @onclick="() => submittedApplication = null"></button>
+    </div>
+}
+
+@if (hasSubmitError)
+{
+    <ErrorAlert Message="Unable to submit the application. Please try again." />
+}
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <StudentApplicationForm Model="application"
+                                SubmitText="Submit application"
+                                IsSubmitting="isSubmitting"
+                                OnValidSubmit="HandleSubmitAsync" />
+    </div>
+</div>
+
+@code {
+    [SupplyParameterFromQuery(Name = "country")]
+    public string? CountryName { get; set; }
+
+    [SupplyParameterFromQuery(Name = "university")]
+    public string? UniversityName { get; set; }
+
+    private StudentApplication application = new();
+    private StudentApplication? submittedApplication;
+
+    private bool isSubmitting;
+    private bool hasSubmitError;
+
+    protected override void OnInitialized()
+    {
+        application = new StudentApplication
+        {
+            Country = CountryName ?? string.Empty,
+            UniversityName = UniversityName ?? string.Empty,
+            ApplicationDate = DateTime.Today
+        };
+    }
+
+    private async Task HandleSubmitAsync(StudentApplication model)
+    {
+        isSubmitting = true;
+        hasSubmitError = false;
+        submittedApplication = null;
+
+        try
+        {
+            await ApplicationService.CreateAsync(model);
+
+            submittedApplication = model;
+            application = new StudentApplication { ApplicationDate = DateTime.Today };
+        }
+        catch (Exception ex)
+        {
+            hasSubmitError = true;
+            Logger.LogError(ex, "Failed to create student application");
+        }
+        finally
+        {
+            isSubmitting = false;
+        }
+    }
+}

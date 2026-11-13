@@ -34,5 +34,5 @@ public class StudentApplication
 
     // It’s in the API, though not mentioned in the task requirements.
     [StringLength(1000, ErrorMessage = "Personal statement cannot exceed 1000 characters.")]
-    public string? PersonalStatement { get; set; }
+    public string? PersonalStatement { get; set; } = string.Empty;
 }

@@ -1,0 +1,162 @@
+﻿@inject ICountryService CountryService
+@inject IUniversityService UniversityService
+@inject ILogger<StudentApplicationForm> Logger
+
+<EditForm Model="Model" OnValidSubmit="HandleValidSubmitAsync">
+    <DataAnnotationsValidator />
+
+    <div class="row g-3">
+        <div class="col-md-6">
+            <label for="studentName" class="form-label">Student Name</label>
+            <InputText id="studentName" class="form-control" @bind-Value="Model.StudentName" />
+            <ValidationMessage For="() => Model.StudentName" />
+        </div>
+
+        <div class="col-md-6">
+            <label for="email" class="form-label">Email Address</label>
+            <InputText id="email" type="email" class="form-control" @bind-Value="Model.Email" />
+            <ValidationMessage For="() => Model.Email" />
+        </div>
+
+        <div class="col-md-6">
+            <label for="country" class="form-label">Country</label>
+            <InputText id="country" class="form-control" list="country-options" autocomplete="off"
+                       @bind-Value="Model.Country"
+                       @bind-Value:after="LoadUniversitySuggestionsAsync" />
+            <datalist id="country-options">
+                @foreach (var country in countries)
+                {
+                    <option value="@country.Name"></option>
+                }
+            </datalist>
+            <ValidationMessage For="() => Model.Country" />
+        </div>
+
+        <div class="col-md-6">
+            <label for="university" class="form-label">University Name</label>
+            <InputText id="university" class="form-control" list="university-options" autocomplete="off"
+                       @bind-Value="Model.UniversityName" />
+            <datalist id="university-options">
+                @foreach (var university in universitySuggestions)
+                {
+                    <option value="@university.Name"></option>
+                }
+            </datalist>
+            @if (isLoadingUniversities)
+            {
+                <div class="form-text">Loading university suggestions...</div>
+            }
+            else if (universitySuggestions.Count > 0)
+            {
+                <div class="form-text">@universitySuggestions.Count suggestions available. Start typing to filter.</div>
+            }
+            <ValidationMessage For="() => Model.UniversityName" />
+        </div>
+
+        <div class="col-md-6">
+            <label for="course" class="form-label">Course Name</label>
+            <InputText id="course" class="form-control" @bind-Value="Model.CourseName" />
+            <ValidationMessage For="() => Model.CourseName" />
+        </div>
+
+        <div class="col-md-6">
+            <label for="applicationDate" class="form-label">Application Date</label>
+            <InputDate id="applicationDate" class="form-control" @bind-Value="Model.ApplicationDate" />
+            <ValidationMessage For="() => Model.ApplicationDate" />
+        </div>
+
+        <div class="col-12">
+            <label for="personalStatement" class="form-label">
+                Personal Statement <span class="text-muted">(optional)</span>
+            </label>
+            <InputTextArea id="personalStatement" class="form-control" rows="4"
+                           @bind-Value="Model.PersonalStatement" />
+            <ValidationMessage For="() => Model.PersonalStatement" />
+        </div>
+    </div>
+
+    <div class="d-flex gap-2 mt-4">
+        <button type="submit" class="btn btn-primary" disabled="@IsSubmitting">
+            @if (IsSubmitting)
+            {
+                <span class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span>
+            }
+            @SubmitText
+        </button>
+        <a href="@CancelUrl" class="btn btn-outline-secondary">Cancel</a>
+    </div>
+</EditForm>
+
+@code {
+    private List<Country> countries = new();
+    private List<University> universitySuggestions = new();
+    private string? suggestionsLoadedFor;
+    private bool isLoadingUniversities;
+
+    [Parameter, EditorRequired]
+    public StudentApplication Model { get; set; } = default!;
+
+    [Parameter]
+    public string SubmitText { get; set; } = "Submit";
+
+    [Parameter]
+    public bool IsSubmitting { get; set; }
+
+    [Parameter]
+    public string CancelUrl { get; set; } = "student-applications";
+
+    [Parameter]
+    public EventCallback<StudentApplication> OnValidSubmit { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Suggestions are optional: the form must still work if the Countries API is down
+        try
+        {
+            countries = await CountryService.GetAllCountriesAsync();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWarning(ex, "Country suggestions are unavailable");
+        }
+
+        await LoadUniversitySuggestionsAsync();
+    }
+
+    private async Task LoadUniversitySuggestionsAsync()
+    {
+        var match = countries.FirstOrDefault(c =>
+            c.Name.Equals(Model.Country?.Trim(), StringComparison.OrdinalIgnoreCase));
+
+        if (match is null)
+        {
+            universitySuggestions = new();
+            suggestionsLoadedFor = null;
+            return;
+        }
+
+        if (match.Name == suggestionsLoadedFor)
+        {
+            return;
+        }
+
+        isLoadingUniversities = true;
+
+        try
+        {
+            universitySuggestions = await UniversityService.GetUniversitiesByCountryAsync(match.Name);
+            suggestionsLoadedFor = match.Name;
+        }
+        catch (Exception ex)
+        {
+            universitySuggestions = new();
+            Logger.LogWarning(ex, "University suggestions are unavailable for {Country}", match.Name);
+        }
+        finally
+        {
+            isLoadingUniversities = false;
+        }
+    }
+
+    private Task HandleValidSubmitAsync() => OnValidSubmit.InvokeAsync(Model);
+}
