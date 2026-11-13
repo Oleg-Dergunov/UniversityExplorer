@@ -1,0 +1,78 @@
+﻿@page "/student-applications"
+@rendermode InteractiveServer
+@inject IStudentApplicationService ApplicationService
+@inject NavigationManager Navigation
+@inject ILogger<StudentApplications> Logger
+
+<PageTitle>Student Applications</PageTitle>
+
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+    <h1 class="mb-0">
+        Student Applications
+        @if (!isLoading && !hasError)
+        {
+            <span class="badge text-bg-secondary fs-6 align-middle">@applications.Count</span>
+        }
+    </h1>
+    <a href="student-applications/create" class="btn btn-primary">
+        <i class="bi bi-plus-lg me-1" aria-hidden="true"></i>New application
+    </a>
+</div>
+
+@if (isLoading)
+{
+    <LoadingIndicator Message="Loading student applications..." />
+}
+else if (hasError)
+{
+    <ErrorAlert Message="Unable to retrieve student applications. Please try again later."
+                OnRetry="LoadApplicationsAsync" />
+}
+else if (applications.Count == 0)
+{
+    <div class="alert alert-info">
+        No applications have been submitted yet.
+        <a href="student-applications/create" class="alert-link">Create the first one</a>.
+    </div>
+}
+else
+{
+    <StudentApplicationList Applications="applications" OnEdit="HandleEdit" />
+}
+
+@code {
+    private List<StudentApplication> applications = new();
+
+    private bool isLoading = true;
+    private bool hasError;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadApplicationsAsync();
+    }
+
+    private async Task LoadApplicationsAsync()
+    {
+        isLoading = true;
+        hasError = false;
+
+        try
+        {
+            applications = await ApplicationService.GetAllAsync();
+        }
+        catch (Exception ex)
+        {
+            hasError = true;
+            Logger.LogError(ex, "Failed to load student applications");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void HandleEdit(StudentApplication application)
+    {
+        Navigation.NavigateTo($"student-applications/edit/{application.Id}");
+    }
+}

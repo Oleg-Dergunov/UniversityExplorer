@@ -1,0 +1,50 @@
+﻿@using System.Globalization
+
+<div class="table-responsive">
+    <table class="table table-striped table-hover align-middle">
+        <thead class="table-light">
+            <tr>
+                <th scope="col">Id</th>
+                <th scope="col">Student Name</th>
+                <th scope="col">University Name</th>
+                <th scope="col">Country</th>
+                <th scope="col">Course Name</th>
+                <th scope="col">Application Date</th>
+                <th scope="col" class="text-end">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var application in Applications)
+            {
+                <tr @key="application.Id">
+                    <td>@application.Id</td>
+                    <td>
+                        <div class="fw-semibold">@application.StudentName</div>
+                        <small class="text-muted">@application.Email</small>
+                    </td>
+                    <td>@application.UniversityName</td>
+                    <td>@application.Country</td>
+                    <td>@application.CourseName</td>
+                    <td>@FormatDate(application.ApplicationDate)</td>
+                    <td class="text-end">
+                        <button type="button" class="btn btn-sm btn-outline-primary"
+                                @onclick="() => OnEdit.InvokeAsync(application)">
+                            <i class="bi bi-pencil-square me-1" aria-hidden="true"></i>Edit
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public List<StudentApplication> Applications { get; set; } = new();
+
+    [Parameter]
+    public EventCallback<StudentApplication> OnEdit { get; set; }
+
+    private static string FormatDate(DateTime? date) =>
+        date?.ToString("dd MMM yyyy", CultureInfo.InvariantCulture) ?? "—";
+}
