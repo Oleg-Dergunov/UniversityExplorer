@@ -1,0 +1,43 @@
+﻿@using System.Globalization
+
+<div class="card shadow-sm">
+    <div class="card-header fw-semibold">Country Details</div>
+    <div class="card-body">
+        <dl class="row mb-0">
+            <dt class="col-5">Country</dt>
+            <dd class="col-7">@Country.Name</dd>
+
+            <dt class="col-5">Capital</dt>
+            <dd class="col-7">@(string.IsNullOrWhiteSpace(Country.Capital) ? "N/A" : Country.Capital)</dd>
+
+            <dt class="col-5">Region</dt>
+            <dd class="col-7">
+                @(Country.Region ?? "N/A")
+                @if (!string.IsNullOrWhiteSpace(Country.Subregion))
+                {
+                    <small class="text-muted d-block">@Country.Subregion</small>
+                }
+            </dd>
+
+            <dt class="col-5">Population</dt>
+            <dd class="col-7">@Country.Population.ToString("N0", CultureInfo.InvariantCulture)</dd>
+
+            <dt class="col-5">Flag</dt>
+            <dd class="col-7 mb-0">
+                @if (!string.IsNullOrWhiteSpace(Country.Flags?.Png))
+                {
+                    <img src="@Country.Flags.Png" alt="Flag of @Country.Name" class="country-flag" />
+                }
+                else
+                {
+                    @(Country.FlagEmoji ?? "N/A")
+                }
+            </dd>
+        </dl>
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public Country Country { get; set; } = default!;
+}

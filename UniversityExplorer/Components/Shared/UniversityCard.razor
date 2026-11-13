@@ -1,0 +1,38 @@
+﻿<div class="card h-100 @(IsSelected ? "border-primary shadow" : "shadow-sm")">
+    <div class="card-body d-flex flex-column">
+        <h3 class="h6 card-title">@University.Name</h3>
+
+        <p class="card-text text-muted small mb-2">
+            <i class="bi bi-geo-alt me-1" aria-hidden="true"></i>@University.Country
+        </p>
+
+        @if (!string.IsNullOrWhiteSpace(University.Website))
+        {
+            <a href="@University.Website" target="_blank" rel="noopener noreferrer"
+               class="small mb-3 text-break">
+                @University.WebsiteDisplay
+            </a>
+        }
+        else
+        {
+            <span class="small text-muted mb-3">No website available</span>
+        }
+
+        <button type="button"
+                class="btn btn-sm @(IsSelected ? "btn-primary" : "btn-outline-primary") mt-auto align-self-start"
+                @onclick="() => OnSelect.InvokeAsync(University)">
+            @(IsSelected ? "Selected" : "View details")
+        </button>
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public University University { get; set; } = default!;
+
+    [Parameter]
+    public bool IsSelected { get; set; }
+
+    [Parameter]
+    public EventCallback<University> OnSelect { get; set; }
+}

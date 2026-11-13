@@ -1,0 +1,6 @@
+﻿@media (min-width: 992px) {
+    .explorer-sidebar {
+        position: sticky;
+        top: 4.5rem;
+    }
+}

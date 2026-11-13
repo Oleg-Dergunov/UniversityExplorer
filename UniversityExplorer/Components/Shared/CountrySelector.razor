@@ -1,0 +1,33 @@
+﻿<label for="country-select" class="form-label fw-semibold">Select Country</label>
+<select id="country-select" class="form-select"
+        value="@(SelectedCountryName ?? string.Empty)"
+        @onchange="HandleChangeAsync">
+    <option value="" disabled 
+        selected="@(SelectedCountryName is null)">-- Choose a country --</option>
+    @foreach (var country in Countries)
+    {
+        <option value="@country.Name">@country.Name</option>
+    }
+</select>
+
+@code {
+    [Parameter, EditorRequired]
+    public List<Country> Countries { get; set; } = new();
+
+    [Parameter]
+    public string? SelectedCountryName { get; set; }
+
+    [Parameter]
+    public EventCallback<Country> OnCountrySelected { get; set; }
+
+    private async Task HandleChangeAsync(ChangeEventArgs e)
+    {
+        var name = e.Value?.ToString();
+        var country = Countries.FirstOrDefault(c => c.Name == name);
+
+        if (country is not null)
+        {
+            await OnCountrySelected.InvokeAsync(country);
+        }
+    }
+}

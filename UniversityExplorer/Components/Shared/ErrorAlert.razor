@@ -1,0 +1,20 @@
+﻿<div class="alert alert-danger d-flex align-items-center justify-content-between gap-3" role="alert">
+    <span>
+        <i class="bi bi-exclamation-triangle-fill me-2" aria-hidden="true"></i>@Message
+    </span>
+
+    @if (OnRetry.HasDelegate)
+    {
+        <button type="button" class="btn btn-sm btn-outline-danger" @onclick="() => OnRetry.InvokeAsync()">
+            Try again
+        </button>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public string Message { get; set; } = "Unable to retrieve data.";
+
+    [Parameter]
+    public EventCallback OnRetry { get; set; }
+}

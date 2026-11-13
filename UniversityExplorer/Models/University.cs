@@ -25,4 +25,8 @@ public class University
 
     [JsonIgnore]
     public string? Domain => Domains.FirstOrDefault();
+
+    [JsonIgnore]
+    public string? WebsiteDisplay =>
+    Uri.TryCreate(Website, UriKind.Absolute, out var uri) ? uri.Host : Website;
 }
