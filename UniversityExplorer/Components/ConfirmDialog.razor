@@ -1,0 +1,82 @@
+﻿<div class="modal fade show d-block" tabindex="-1" role="dialog"
+     aria-modal="true" aria-labelledby="confirm-dialog-title"
+     @ref="modalElement"
+     @onclick="CancelAsync"
+     @onkeydown="HandleKeyDownAsync">
+    <div class="modal-dialog modal-dialog-centered" @onclick:stopPropagation="true">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title h5" id="confirm-dialog-title">@Title</h2>
+                <button type="button" class="btn-close" aria-label="Close"
+                        disabled="@IsProcessing" @onclick="CancelAsync"></button>
+            </div>
+
+            <div class="modal-body">
+                @ChildContent
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary"
+                        disabled="@IsProcessing" @onclick="CancelAsync">
+                    Cancel
+                </button>
+                <button type="button" class="btn btn-danger"
+                        disabled="@IsProcessing" @onclick="() => OnConfirm.InvokeAsync()">
+                    @if (IsProcessing)
+                    {
+                        <span class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span>
+                    }
+                    @ConfirmText
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal-backdrop fade show"></div>
+
+@code {
+    private ElementReference modalElement;
+
+    [Parameter]
+    public string Title { get; set; } = "Are you sure?";
+
+    [Parameter]
+    public string ConfirmText { get; set; } = "Confirm";
+
+    [Parameter]
+    public bool IsProcessing { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public EventCallback OnConfirm { get; set; }
+
+    [Parameter]
+    public EventCallback OnCancel { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await modalElement.FocusAsync();
+        }
+    }
+
+    private async Task CancelAsync()
+    {
+        // The dialog cannot be dismissed while the action is in progress
+        if (!IsProcessing)
+        {
+            await OnCancel.InvokeAsync();
+        }
+    }
+
+    private async Task HandleKeyDownAsync(KeyboardEventArgs e)
+    {
+        if (e.Key == "Escape")
+        {
+            await CancelAsync();
+        }
+    }
+}

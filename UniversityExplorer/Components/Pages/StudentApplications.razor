@@ -20,16 +20,20 @@
     </a>
 </div>
 
-@if (showUpdatedMessage && UpdatedId is not null)
+@if (successMessage is not null)
 {
     <div class="alert alert-success d-flex align-items-center justify-content-between gap-3" role="alert">
         <span>
-            <i class="bi bi-check-circle-fill me-2" aria-hidden="true"></i>
-            Application #@UpdatedId was updated successfully.
+            <i class="bi bi-check-circle-fill me-2" aria-hidden="true"></i>@successMessage
         </span>
         <button type="button" class="btn-close" aria-label="Close"
-                @onclick="() => showUpdatedMessage = false"></button>
+                @onclick="() => successMessage = null"></button>
     </div>
+}
+
+@if (deleteErrorMessage is not null)
+{
+    <ErrorAlert Message="@deleteErrorMessage" />
 }
 
 @if (isLoading)
@@ -56,7 +60,8 @@ else
 
     <StudentApplicationList Applications="pageItems"
                             HighlightedId="UpdatedId"
-                            OnEdit="HandleEdit" />
+                            OnEdit="HandleEdit"
+                            OnDelete="RequestDelete" />
 
     @if (totalPages > 1)
     {
@@ -72,6 +77,25 @@ else
     }
 }
 
+@if (applicationToDelete is not null)
+{
+    <ConfirmDialog Title="Delete application"
+                   ConfirmText="Delete"
+                   IsProcessing="isDeleting"
+                   OnConfirm="ConfirmDeleteAsync"
+                   OnCancel="CancelDelete">
+        <p class="mb-2">
+            Are you sure you want to delete application <strong>#@applicationToDelete.Id</strong>?
+        </p>
+        <p class="text-muted mb-0">
+            @applicationToDelete.StudentName — @applicationToDelete.UniversityName
+        </p>
+        <p class="text-danger small mt-3 mb-0">
+            <i class="bi bi-exclamation-triangle me-1" aria-hidden="true"></i>This action cannot be undone.
+        </p>
+    </ConfirmDialog>
+}
+
 @code {
     private const int PageSize = 10;
 
@@ -83,10 +107,20 @@ else
 
     private bool isLoading = true;
     private bool hasError;
-    private bool showUpdatedMessage = true;
+
+    private StudentApplication? applicationToDelete;
+    private bool isDeleting;
+
+    private string? successMessage;
+    private string? deleteErrorMessage;
 
     protected override async Task OnInitializedAsync()
     {
+        if (UpdatedId is not null)
+        {
+            successMessage = $"Application #{UpdatedId} was updated successfully.";
+        }
+
         await LoadApplicationsAsync();
     }
 
@@ -132,5 +166,45 @@ else
     private void HandleEdit(StudentApplication application)
     {
         Navigation.NavigateTo($"student-applications/edit/{application.Id}");
+    }
+
+    private void RequestDelete(StudentApplication application)
+    {
+        applicationToDelete = application;
+        deleteErrorMessage = null;
+    }
+
+    private void CancelDelete()
+    {
+        applicationToDelete = null;
+    }
+
+    private async Task ConfirmDeleteAsync()
+    {
+        if (applicationToDelete is null)
+        {
+            return;
+        }
+
+        var target = applicationToDelete;
+        isDeleting = true;
+
+        try
+        {
+            await ApplicationService.DeleteAsync(target.Id);
+
+            applications.Remove(target);
+            successMessage = $"Application #{target.Id} ({target.StudentName}) was deleted.";
+        }
+        catch (Exception ex)
+        {
+            deleteErrorMessage = $"Unable to delete application #{target.Id}. Please try again.";
+            Logger.LogError(ex, "Failed to delete student application {Id}", target.Id);
+        }
+        finally
+        {
+            isDeleting = false;
+            applicationToDelete = null;
+        }
     }
 }

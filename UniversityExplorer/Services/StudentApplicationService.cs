@@ -47,4 +47,10 @@ public class StudentApplicationService : IStudentApplicationService
         var response = await _httpClient.PutAsJsonAsync($"{Endpoint}/{id}", application);
         response.EnsureSuccessStatusCode();
     }
+
+    public async Task DeleteAsync(int id)
+    {
+        var response = await _httpClient.DeleteAsync($"{Endpoint}/{id}");
+        response.EnsureSuccessStatusCode();
+    }
 }

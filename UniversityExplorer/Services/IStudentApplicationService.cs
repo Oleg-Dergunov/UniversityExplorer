@@ -8,4 +8,5 @@ public interface IStudentApplicationService
     Task<StudentApplication?> GetByIdAsync(int id);
     Task CreateAsync(StudentApplication application);
     Task UpdateAsync(int id, StudentApplication application);
+    Task DeleteAsync(int id);
 }
