@@ -26,6 +26,8 @@ builder.Services.AddHttpClient<IStudentApplicationService, StudentApplicationSer
     client.Timeout = TimeSpan.FromSeconds(30);
 });
 
+builder.Services.AddScoped<IFavouritesService, FavouritesService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

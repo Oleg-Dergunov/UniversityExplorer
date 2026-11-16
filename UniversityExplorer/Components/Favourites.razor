@@ -1,0 +1,86 @@
+﻿@page "/favourites"
+@rendermode InteractiveServer
+@inject IFavouritesService FavouritesService
+
+<PageTitle>Favourite Universities</PageTitle>
+
+<h1 class="mb-4">
+    Favourite Universities
+    @if (isLoaded)
+    {
+        <span class="badge text-bg-secondary fs-6 align-middle">@FavouritesService.Favourites.Count</span>
+    }
+</h1>
+
+@if (!isLoaded)
+{
+    <LoadingIndicator Message="Loading favourites..." />
+}
+else if (FavouritesService.Favourites.Count == 0)
+{
+    <div class="alert alert-info">
+        You have no favourite universities yet. Open the
+        <a href="university-explorer" class="alert-link">University Explorer</a>
+        and click the star on a university to save it here.
+    </div>
+}
+else
+{
+    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-3">
+        @foreach (var university in SortedFavourites)
+        {
+            <div class="col" @key="@($"{university.Country}|{university.Name}")">
+                <UniversityCard University="university"
+                                IsSelected="university == selectedUniversity"
+                                IsFavourite="true"
+                                OnSelect="HandleUniversitySelected"
+                                OnToggleFavourite="HandleToggleFavouriteAsync" />
+            </div>
+        }
+    </div>
+
+    <p class="text-muted small mt-4 mb-0">
+        <i class="bi bi-info-circle me-1" aria-hidden="true"></i>
+        Favourites are saved in this browser's local storage.
+    </p>
+}
+
+@if (selectedUniversity is not null)
+{
+    <UniversityDetails University="selectedUniversity" OnClose="CloseUniversityDetails" />
+}
+
+@code {
+    private bool isLoaded;
+    private University? selectedUniversity;
+
+    private IEnumerable<University> SortedFavourites =>
+        FavouritesService.Favourites
+            .OrderBy(u => u.Country)
+            .ThenBy(u => u.Name);
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await FavouritesService.EnsureLoadedAsync();
+            isLoaded = true;
+            StateHasChanged();
+        }
+    }
+
+    private async Task HandleToggleFavouriteAsync(University university)
+    {
+        await FavouritesService.ToggleAsync(university);
+    }
+
+    private void HandleUniversitySelected(University university)
+    {
+        selectedUniversity = university;
+    }
+
+    private void CloseUniversityDetails()
+    {
+        selectedUniversity = null;
+    }
+}

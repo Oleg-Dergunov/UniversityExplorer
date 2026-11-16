@@ -1,0 +1,8 @@
+﻿.favourite-toggle {
+    font-size: 1.25rem;
+    text-decoration: none;
+}
+
+    .favourite-toggle:hover i {
+        color: var(--bs-warning) !important;
+    }

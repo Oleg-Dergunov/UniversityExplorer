@@ -2,6 +2,7 @@
 @rendermode InteractiveServer
 @inject ICountryService CountryService
 @inject IUniversityService UniversityService
+@inject IFavouritesService FavouritesService
 @inject IJSRuntime JS
 @inject ILogger<UniversityExplorerPage> Logger
 
@@ -57,9 +58,10 @@ else
             else
             {
                 var filtered = FilteredUniversities.ToList();
+                var favouritesCount = universities.Count(FavouritesService.IsFavourite);
                 var totalPages = Math.Max(1, (int)Math.Ceiling(filtered.Count / (double)PageSize));
-                var page = Math.Min(currentPage, totalPages);
-                var pageItems = filtered.Skip((page - 1) * PageSize).Take(PageSize).ToList();
+                var visiblePage = Math.Min(currentPage, totalPages);
+                var pageItems = filtered.Skip((visiblePage - 1) * PageSize).Take(PageSize).ToList();
 
                 <div class="d-flex justify-content-between align-items-center mb-2">
                     <h2 class="h5 mb-0">Universities in @selectedCountry.Name</h2>
@@ -77,6 +79,14 @@ else
                                aria-label="Search university" />
                     </div>
 
+                    <button type="button"
+                            class="btn @(showFavouritesOnly ? "btn-warning" : "btn-outline-secondary") text-nowrap"
+                            title="@(showFavouritesOnly ? "Showing favourites only. Click to show all" : "Show favourites only")"
+                            aria-pressed="@showFavouritesOnly.ToString().ToLowerInvariant()"
+                            @onclick="ToggleFavouritesFilter">
+                        <i class="bi @(showFavouritesOnly ? "bi-star-fill" : "bi-star") me-1" aria-hidden="true"></i>@favouritesCount
+                    </button>
+
                     <button type="button" class="btn btn-outline-secondary text-nowrap"
                             title="@(sortAscending ? "Sorted A to Z. Click to sort Z to A" : "Sorted Z to A. Click to sort A to Z")"
                             @onclick="ToggleSortOrder">
@@ -86,7 +96,17 @@ else
 
                 @if (filtered.Count == 0)
                 {
-                    <p class="text-muted">No universities match "@searchText".</p>
+                    @if (showFavouritesOnly && string.IsNullOrWhiteSpace(searchText))
+                    {
+                        <p class="text-muted">
+                            No favourite universities in @selectedCountry.Name yet.
+                            Click the <i class="bi bi-star" aria-hidden="true"></i> on a university to add it.
+                        </p>
+                    }
+                    else
+                    {
+                        <p class="text-muted">No universities match "@searchText".</p>
+                    }
                 }
                 else
                 {
@@ -96,7 +116,9 @@ else
                             <div class="col" @key="university.Name">
                                 <UniversityCard University="university"
                                                 IsSelected="university == selectedUniversity"
-                                                OnSelect="HandleUniversitySelected" />
+                                                IsFavourite="FavouritesService.IsFavourite(university)"
+                                                OnSelect="HandleUniversitySelected"
+                                                OnToggleFavourite="HandleToggleFavouriteAsync" />
                             </div>
                         }
                     </div>
@@ -104,11 +126,11 @@ else
                     @if (totalPages > 1)
                     {
                         <div class="mt-4">
-                            <Pagination CurrentPage="page"
+                            <Pagination CurrentPage="visiblePage"
                                         TotalPages="totalPages"
                                         OnPageChanged="HandlePageChangedAsync" />
                             <p class="text-muted small text-center mt-2 mb-0">
-                                Showing @((page - 1) * PageSize + 1)–@((page - 1) * PageSize + pageItems.Count)
+                                Showing @((visiblePage - 1) * PageSize + 1)–@((visiblePage - 1) * PageSize + pageItems.Count)
                                 of @filtered.Count
                             </p>
                         </div>
@@ -136,6 +158,7 @@ else
     private University? selectedUniversity;
     private string searchText = string.Empty;
     private bool sortAscending = true;
+    private bool showFavouritesOnly;
     private int currentPage = 1;
 
     private bool isLoadingCountries = true;
@@ -148,9 +171,17 @@ else
     {
         get
         {
-            var result = string.IsNullOrWhiteSpace(searchText)
-                ? universities
-                : universities.Where(u => u.Name.Contains(searchText.Trim(), StringComparison.OrdinalIgnoreCase));
+            IEnumerable<University> result = universities;
+
+            if (showFavouritesOnly)
+            {
+                result = result.Where(FavouritesService.IsFavourite);
+            }
+
+            if (!string.IsNullOrWhiteSpace(searchText))
+            {
+                result = result.Where(u => u.Name.Contains(searchText.Trim(), StringComparison.OrdinalIgnoreCase));
+            }
 
             return sortAscending
                 ? result.OrderBy(u => u.Name)
@@ -161,6 +192,16 @@ else
     protected override async Task OnInitializedAsync()
     {
         await LoadCountriesAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // Favourites live in localStorage, which is only reachable once the page is interactive
+        if (firstRender)
+        {
+            await FavouritesService.EnsureLoadedAsync();
+            StateHasChanged();
+        }
     }
 
     private async Task LoadCountriesAsync()
@@ -248,10 +289,21 @@ else
         currentPage = 1;
     }
 
-    private async Task HandlePageChangedAsync(int page)
+    private void ToggleFavouritesFilter()
     {
-        currentPage = page;
+        showFavouritesOnly = !showFavouritesOnly;
+        currentPage = 1;
+    }
+
+    private async Task HandlePageChangedAsync(int pageNumber)
+    {
+        currentPage = pageNumber;
         await JS.InvokeVoidAsync("scrollTo", new { top = 0, behavior = "smooth" });
+    }
+
+    private async Task HandleToggleFavouriteAsync(University university)
+    {
+        await FavouritesService.ToggleAsync(university);
     }
 
     private void HandleUniversitySelected(University university)

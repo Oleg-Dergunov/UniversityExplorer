@@ -1,6 +1,19 @@
 ﻿<div class="card h-100 @(IsSelected ? "border-primary shadow" : "shadow-sm")">
     <div class="card-body d-flex flex-column">
-        <h3 class="h6 card-title">@University.Name</h3>
+        <div class="d-flex justify-content-between align-items-start gap-2">
+            <h3 class="h6 card-title mb-2">@University.Name</h3>
+
+            @if (OnToggleFavourite.HasDelegate)
+            {
+                <button type="button" class="btn btn-link p-0 lh-1 favourite-toggle"
+                        title="@(IsFavourite ? "Remove from favourites" : "Add to favourites")"
+                        aria-label="@(IsFavourite ? "Remove from favourites" : "Add to favourites")"
+                        aria-pressed="@IsFavourite.ToString().ToLowerInvariant()"
+                        @onclick="() => OnToggleFavourite.InvokeAsync(University)">
+                    <i class="bi @(IsFavourite ? "bi-star-fill text-warning" : "bi-star text-secondary")" aria-hidden="true"></i>
+                </button>
+            }
+        </div>
 
         <p class="card-text text-muted small mb-2">
             <i class="bi bi-geo-alt me-1" aria-hidden="true"></i>@University.Country
@@ -34,5 +47,11 @@
     public bool IsSelected { get; set; }
 
     [Parameter]
+    public bool IsFavourite { get; set; }
+
+    [Parameter]
     public EventCallback<University> OnSelect { get; set; }
+
+    [Parameter]
+    public EventCallback<University> OnToggleFavourite { get; set; }
 }
