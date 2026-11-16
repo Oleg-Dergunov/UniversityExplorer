@@ -1,0 +1,90 @@
+﻿@if (TotalPages > 1)
+{
+    <nav aria-label="Pagination">
+        <ul class="pagination justify-content-center flex-wrap mb-0">
+            <li class="page-item @(CurrentPage == 1 ? "disabled" : null)">
+                <button type="button" class="page-link" aria-label="Previous page"
+                        disabled="@(CurrentPage == 1)"
+                        @onclick="() => GoToPageAsync(CurrentPage - 1)">
+                    &laquo;
+                </button>
+            </li>
+
+            @foreach (var item in GetPageItems())
+            {
+                if (item.PageNumber is null)
+                {
+                    <li @key="item.Key" class="page-item disabled"><span class="page-link">…</span></li>
+                }
+                else
+                {
+                    var pageNumber = item.PageNumber.Value;
+                    <li @key="item.Key"
+                        class="page-item @(pageNumber == CurrentPage ? "active" : null)"
+                        aria-current="@(pageNumber == CurrentPage ? "page" : null)">
+                        <button type="button" class="page-link" @onclick="() => GoToPageAsync(pageNumber)">@pageNumber</button>
+                    </li>
+                }
+            }
+
+            <li class="page-item @(CurrentPage == TotalPages ? "disabled" : null)">
+                <button type="button" class="page-link" aria-label="Next page"
+                        disabled="@(CurrentPage == TotalPages)"
+                        @onclick="() => GoToPageAsync(CurrentPage + 1)">
+                    &raquo;
+                </button>
+            </li>
+        </ul>
+    </nav>
+}
+
+@code {
+    private const int NeighbourPages = 2;
+
+    [Parameter, EditorRequired]
+    public int CurrentPage { get; set; }
+
+    [Parameter, EditorRequired]
+    public int TotalPages { get; set; }
+
+    [Parameter]
+    public EventCallback<int> OnPageChanged { get; set; }
+
+    // Each item has a stable key so that Blazor keeps focus on the same page button after re-rendering.
+    // A null PageNumber represents an ellipsis.
+    private IEnumerable<(string Key, int? PageNumber)> GetPageItems()
+    {
+        var pageNumbers = new SortedSet<int> { 1, TotalPages };
+
+        for (var number = CurrentPage - NeighbourPages; number <= CurrentPage + NeighbourPages; number++)
+        {
+            if (number >= 1 && number <= TotalPages)
+            {
+                pageNumbers.Add(number);
+            }
+        }
+
+        int? previous = null;
+
+        foreach (var number in pageNumbers)
+        {
+            if (previous is not null && number - previous > 1)
+            {
+                yield return ($"gap-after-{previous}", null);
+            }
+
+            yield return ($"page-{number}", number);
+            previous = number;
+        }
+    }
+
+    private async Task GoToPageAsync(int pageNumber)
+    {
+        pageNumber = Math.Clamp(pageNumber, 1, TotalPages);
+
+        if (pageNumber != CurrentPage)
+        {
+            await OnPageChanged.InvokeAsync(pageNumber);
+        }
+    }
+}

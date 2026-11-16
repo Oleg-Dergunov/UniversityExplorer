@@ -2,6 +2,7 @@
 @rendermode InteractiveServer
 @inject IStudentApplicationService ApplicationService
 @inject NavigationManager Navigation
+@inject IJSRuntime JS
 @inject ILogger<StudentApplications> Logger
 
 <PageTitle>Student Applications</PageTitle>
@@ -49,16 +50,36 @@ else if (applications.Count == 0)
 }
 else
 {
-    <StudentApplicationList Applications="applications"
+    var totalPages = (int)Math.Ceiling(applications.Count / (double)PageSize);
+    var visiblePage = Math.Clamp(currentPage, 1, totalPages);
+    var pageItems = applications.Skip((visiblePage - 1) * PageSize).Take(PageSize).ToList();
+
+    <StudentApplicationList Applications="pageItems"
                             HighlightedId="UpdatedId"
                             OnEdit="HandleEdit" />
+
+    @if (totalPages > 1)
+    {
+        <div class="mt-3">
+            <Pagination CurrentPage="visiblePage"
+                        TotalPages="totalPages"
+                        OnPageChanged="HandlePageChangedAsync" />
+            <p class="text-muted small text-center mt-2 mb-0">
+                Showing @((visiblePage - 1) * PageSize + 1)–@((visiblePage - 1) * PageSize + pageItems.Count)
+                of @applications.Count
+            </p>
+        </div>
+    }
 }
 
 @code {
+    private const int PageSize = 10;
+
     [SupplyParameterFromQuery(Name = "updated")]
     public int? UpdatedId { get; set; }
 
     private List<StudentApplication> applications = new();
+    private int currentPage = 1;
 
     private bool isLoading = true;
     private bool hasError;
@@ -77,6 +98,7 @@ else
         try
         {
             applications = await ApplicationService.GetAllAsync();
+            currentPage = GetInitialPage();
         }
         catch (Exception ex)
         {
@@ -87,6 +109,24 @@ else
         {
             isLoading = false;
         }
+    }
+
+    // After an update, open the page that contains the updated application so its highlight is visible
+    private int GetInitialPage()
+    {
+        if (UpdatedId is null)
+        {
+            return 1;
+        }
+
+        var index = applications.FindIndex(a => a.Id == UpdatedId);
+        return index < 0 ? 1 : index / PageSize + 1;
+    }
+
+    private async Task HandlePageChangedAsync(int pageNumber)
+    {
+        currentPage = pageNumber;
+        await JS.InvokeVoidAsync("scrollTo", new { top = 0, behavior = "smooth" });
     }
 
     private void HandleEdit(StudentApplication application)

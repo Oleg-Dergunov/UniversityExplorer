@@ -2,6 +2,7 @@
 @rendermode InteractiveServer
 @inject ICountryService CountryService
 @inject IUniversityService UniversityService
+@inject IJSRuntime JS
 @inject ILogger<UniversityExplorerPage> Logger
 
 <PageTitle>University Explorer</PageTitle>
@@ -56,6 +57,9 @@ else
             else
             {
                 var filtered = FilteredUniversities.ToList();
+                var totalPages = Math.Max(1, (int)Math.Ceiling(filtered.Count / (double)PageSize));
+                var page = Math.Min(currentPage, totalPages);
+                var pageItems = filtered.Skip((page - 1) * PageSize).Take(PageSize).ToList();
 
                 <div class="d-flex justify-content-between align-items-center mb-2">
                     <h2 class="h5 mb-0">Universities in @selectedCountry.Name</h2>
@@ -68,6 +72,7 @@ else
                         <input class="form-control"
                                @bind="searchText"
                                @bind:event="oninput"
+                               @bind:after="ResetPage"
                                placeholder="Search university..."
                                aria-label="Search university" />
                     </div>
@@ -86,7 +91,7 @@ else
                 else
                 {
                     <div class="row row-cols-1 row-cols-md-2 g-3">
-                        @foreach (var university in filtered)
+                        @foreach (var university in pageItems)
                         {
                             <div class="col" @key="university.Name">
                                 <UniversityCard University="university"
@@ -95,6 +100,19 @@ else
                             </div>
                         }
                     </div>
+
+                    @if (totalPages > 1)
+                    {
+                        <div class="mt-4">
+                            <Pagination CurrentPage="page"
+                                        TotalPages="totalPages"
+                                        OnPageChanged="HandlePageChangedAsync" />
+                            <p class="text-muted small text-center mt-2 mb-0">
+                                Showing @((page - 1) * PageSize + 1)–@((page - 1) * PageSize + pageItems.Count)
+                                of @filtered.Count
+                            </p>
+                        </div>
+                    }
                 }
             }
         </div>
@@ -109,6 +127,8 @@ else
 }
 
 @code {
+    private const int PageSize = 20;
+
     private List<Country> countries = new();
     private Country? selectedCountry;
 
@@ -116,6 +136,7 @@ else
     private University? selectedUniversity;
     private string searchText = string.Empty;
     private bool sortAscending = true;
+    private int currentPage = 1;
 
     private bool isLoadingCountries = true;
     private bool hasCountryError;
@@ -167,6 +188,7 @@ else
         selectedCountry = country;
         selectedUniversity = null;
         searchText = string.Empty;
+        currentPage = 1;
 
         await LoadUniversitiesAsync();
     }
@@ -215,9 +237,21 @@ else
         }
     }
 
+    private void ResetPage()
+    {
+        currentPage = 1;
+    }
+
     private void ToggleSortOrder()
     {
         sortAscending = !sortAscending;
+        currentPage = 1;
+    }
+
+    private async Task HandlePageChangedAsync(int page)
+    {
+        currentPage = page;
+        await JS.InvokeVoidAsync("scrollTo", new { top = 0, behavior = "smooth" });
     }
 
     private void HandleUniversitySelected(University university)
