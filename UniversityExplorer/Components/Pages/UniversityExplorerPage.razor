@@ -32,7 +32,6 @@ else
                         <CountryDetails Country="selectedCountry" />
                     </div>
                 }
-
             </div>
         </div>
 
@@ -63,13 +62,21 @@ else
                     <span class="badge text-bg-secondary">@filtered.Count of @universities.Count</span>
                 </div>
 
-                <div class="input-group mb-3">
-                    <span class="input-group-text"><i class="bi bi-search" aria-hidden="true"></i></span>
-                    <input class="form-control"
-                           @bind="searchText"
-                           @bind:event="oninput"
-                           placeholder="Search university..."
-                           aria-label="Search university" />
+                <div class="d-flex gap-2 mb-3">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-search" aria-hidden="true"></i></span>
+                        <input class="form-control"
+                               @bind="searchText"
+                               @bind:event="oninput"
+                               placeholder="Search university..."
+                               aria-label="Search university" />
+                    </div>
+
+                    <button type="button" class="btn btn-outline-secondary text-nowrap"
+                            title="@(sortAscending ? "Sorted A to Z. Click to sort Z to A" : "Sorted Z to A. Click to sort A to Z")"
+                            @onclick="ToggleSortOrder">
+                        @(sortAscending ? "A–Z" : "Z–A")
+                    </button>
                 </div>
 
                 @if (filtered.Count == 0)
@@ -90,14 +97,15 @@ else
                     </div>
                 }
             }
-            @if (selectedUniversity is not null)
-            {
-                <UniversityDetails University="selectedUniversity"
-                                   Country="selectedCountry"
-                                   OnClose="CloseUniversityDetails" />
-            }
         </div>
     </div>
+}
+
+@if (selectedUniversity is not null)
+{
+    <UniversityDetails University="selectedUniversity"
+                       Country="selectedCountry"
+                       OnClose="CloseUniversityDetails" />
 }
 
 @code {
@@ -107,6 +115,7 @@ else
     private List<University> universities = new();
     private University? selectedUniversity;
     private string searchText = string.Empty;
+    private bool sortAscending = true;
 
     private bool isLoadingCountries = true;
     private bool hasCountryError;
@@ -114,10 +123,19 @@ else
     private bool isLoadingUniversities;
     private bool hasUniversityError;
 
-    private IEnumerable<University> FilteredUniversities =>
-        string.IsNullOrWhiteSpace(searchText)
-            ? universities
-            : universities.Where(u => u.Name.Contains(searchText.Trim(), StringComparison.OrdinalIgnoreCase));
+    private IEnumerable<University> FilteredUniversities
+    {
+        get
+        {
+            var result = string.IsNullOrWhiteSpace(searchText)
+                ? universities
+                : universities.Where(u => u.Name.Contains(searchText.Trim(), StringComparison.OrdinalIgnoreCase));
+
+            return sortAscending
+                ? result.OrderBy(u => u.Name)
+                : result.OrderByDescending(u => u.Name);
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -195,6 +213,11 @@ else
                 isLoadingUniversities = false;
             }
         }
+    }
+
+    private void ToggleSortOrder()
+    {
+        sortAscending = !sortAscending;
     }
 
     private void HandleUniversitySelected(University university)
