@@ -3,6 +3,7 @@
 @inject ICountryService CountryService
 @inject IUniversityService UniversityService
 @inject IFavouritesService FavouritesService
+@inject ILocalStorageService LocalStorage
 @inject IJSRuntime JS
 @inject ILogger<UniversityExplorerPage> Logger
 
@@ -83,13 +84,13 @@ else
                             class="btn @(showFavouritesOnly ? "btn-warning" : "btn-outline-secondary") text-nowrap"
                             title="@(showFavouritesOnly ? "Showing favourites only. Click to show all" : "Show favourites only")"
                             aria-pressed="@showFavouritesOnly.ToString().ToLowerInvariant()"
-                            @onclick="ToggleFavouritesFilter">
+                            @onclick="ToggleFavouritesFilterAsync">
                         <i class="bi @(showFavouritesOnly ? "bi-star-fill" : "bi-star") me-1" aria-hidden="true"></i>@favouritesCount
                     </button>
 
                     <button type="button" class="btn btn-outline-secondary text-nowrap"
                             title="@(sortAscending ? "Sorted A to Z. Click to sort Z to A" : "Sorted Z to A. Click to sort A to Z")"
-                            @onclick="ToggleSortOrder">
+                            @onclick="ToggleSortOrderAsync">
                         @(sortAscending ? "A–Z" : "Z–A")
                     </button>
                 </div>
@@ -150,9 +151,11 @@ else
 
 @code {
     private const int PageSize = 20;
+    private const string PreferencesKey = "universityExplorer.explorerPreferences";
 
     private List<Country> countries = new();
     private Country? selectedCountry;
+    private string? pendingCountryName;
 
     private List<University> universities = new();
     private University? selectedUniversity;
@@ -196,12 +199,25 @@ else
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        // Favourites live in localStorage, which is only reachable once the page is interactive
-        if (firstRender)
+        // localStorage is only reachable once the page is interactive
+        if (!firstRender)
         {
-            await FavouritesService.EnsureLoadedAsync();
-            StateHasChanged();
+            return;
         }
+
+        await FavouritesService.EnsureLoadedAsync();
+
+        var preferences = await LocalStorage.GetAsync<ExplorerPreferences>(PreferencesKey);
+
+        if (preferences is not null)
+        {
+            sortAscending = preferences.SortAscending;
+            showFavouritesOnly = preferences.ShowFavouritesOnly;
+            pendingCountryName = preferences.CountryName;
+        }
+
+        StateHasChanged();
+        await TryRestoreCountryAsync();
     }
 
     private async Task LoadCountriesAsync()
@@ -222,6 +238,33 @@ else
         {
             isLoadingCountries = false;
         }
+
+        await TryRestoreCountryAsync();
+    }
+
+    // Preferences and countries load independently, so this runs after each of them;
+    // the country is restored once both are available
+    private async Task TryRestoreCountryAsync()
+    {
+        if (pendingCountryName is null || countries.Count == 0 || selectedCountry is not null)
+        {
+            return;
+        }
+
+        var country = countries.FirstOrDefault(c => c.Name == pendingCountryName);
+        pendingCountryName = null;
+
+        if (country is null)
+        {
+            return;
+        }
+
+        selectedCountry = country;
+        currentPage = 1;
+        StateHasChanged();
+
+        await LoadUniversitiesAsync();
+        StateHasChanged();
     }
 
     private async Task HandleCountrySelectedAsync(Country country)
@@ -231,6 +274,7 @@ else
         searchText = string.Empty;
         currentPage = 1;
 
+        await SavePreferencesAsync();
         await LoadUniversitiesAsync();
     }
 
@@ -278,21 +322,31 @@ else
         }
     }
 
+    private Task SavePreferencesAsync() =>
+        LocalStorage.SetAsync(PreferencesKey, new ExplorerPreferences
+        {
+            CountryName = selectedCountry?.Name,
+            SortAscending = sortAscending,
+            ShowFavouritesOnly = showFavouritesOnly
+        });
+
     private void ResetPage()
     {
         currentPage = 1;
     }
 
-    private void ToggleSortOrder()
+    private async Task ToggleSortOrderAsync()
     {
         sortAscending = !sortAscending;
         currentPage = 1;
+        await SavePreferencesAsync();
     }
 
-    private void ToggleFavouritesFilter()
+    private async Task ToggleFavouritesFilterAsync()
     {
         showFavouritesOnly = !showFavouritesOnly;
         currentPage = 1;
+        await SavePreferencesAsync();
     }
 
     private async Task HandlePageChangedAsync(int pageNumber)

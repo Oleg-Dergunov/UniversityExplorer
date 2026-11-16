@@ -1,6 +1,4 @@
-﻿using System.Text.Json;
-using Microsoft.JSInterop;
-using UniversityExplorer.Models;
+﻿using UniversityExplorer.Models;
 
 namespace UniversityExplorer.Services;
 
@@ -8,13 +6,13 @@ public class FavouritesService : IFavouritesService
 {
     private const string StorageKey = "universityExplorer.favourites";
 
-    private readonly IJSRuntime _js;
+    private readonly ILocalStorageService _localStorage;
     private List<University> _favourites = new();
     private bool _isLoaded;
 
-    public FavouritesService(IJSRuntime js)
+    public FavouritesService(ILocalStorageService localStorage)
     {
-        _js = js;
+        _localStorage = localStorage;
     }
 
     public IReadOnlyList<University> Favourites => _favourites;
@@ -26,21 +24,7 @@ public class FavouritesService : IFavouritesService
             return;
         }
 
-        try
-        {
-            var json = await _js.InvokeAsync<string?>("localStorage.getItem", StorageKey);
-
-            if (!string.IsNullOrWhiteSpace(json))
-            {
-                _favourites = JsonSerializer.Deserialize<List<University>>(json) ?? new();
-            }
-        }
-        catch (JsonException)
-        {
-            // Corrupted data in storage: start with an empty list
-            _favourites = new();
-        }
-
+        _favourites = await _localStorage.GetAsync<List<University>>(StorageKey) ?? new();
         _isLoaded = true;
     }
 
@@ -62,7 +46,7 @@ public class FavouritesService : IFavouritesService
             _favourites.Remove(existing);
         }
 
-        await _js.InvokeVoidAsync("localStorage.setItem", StorageKey, JsonSerializer.Serialize(_favourites));
+        await _localStorage.SetAsync(StorageKey, _favourites);
     }
 
     // University names are not unique worldwide, so the country is part of the identity

@@ -28,6 +28,7 @@ builder.Services.AddHttpClient<IStudentApplicationService, StudentApplicationSer
     client.Timeout = TimeSpan.FromSeconds(30);
 });
 
+builder.Services.AddScoped<ILocalStorageService, LocalStorageService>();
 builder.Services.AddScoped<IFavouritesService, FavouritesService>();
 
 var app = builder.Build();
