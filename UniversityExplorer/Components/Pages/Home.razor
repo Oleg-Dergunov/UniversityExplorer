@@ -1,4 +1,5 @@
 ﻿@page "/"
+@rendermode InteractiveServer
 
 <PageTitle>Home - University Explorer Portal</PageTitle>
 
@@ -54,10 +55,15 @@
 </div>
 
 <section class="mt-5">
+    <h2 class="h4 mb-3">At a glance</h2>
+    <StatisticsOverview />
+</section>
+
+<section class="mt-5">
     <h2 class="h4">Data sources</h2>
     <ul class="list-unstyled">
         <li><strong>Countries API</strong> (countries.dev): country list and details</li>
-        <li><strong>Universities API</strong> (Hipolabs): universities by country</li>
-        <li><strong>Student Application API</strong> (Edutots): view, create and edit applications</li>
+        <li><strong>Universities API</strong> (Hipolabs): universities by country and worldwide statistics</li>
+        <li><strong>Student Application API</strong> (Edutots): view, create, edit and delete applications</li>
     </ul>
 </section>

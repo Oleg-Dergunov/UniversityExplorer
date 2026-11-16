@@ -1,0 +1,68 @@
+﻿@using System.Globalization
+@inject IUniversityService UniversityService
+@inject ILogger<StatisticsOverview> Logger
+
+@if (isLoading)
+{
+    <LoadingIndicator Message="Loading university statistics. This may take a few seconds..." />
+}
+else if (hasError)
+{
+    <ErrorAlert Message="Unable to retrieve university statistics. Please try again later."
+                OnRetry="LoadStatisticsAsync" />
+}
+else if (statistics is not null)
+{
+    <div class="row row-cols-1 row-cols-md-3 g-3">
+        <div class="col">
+            <StatCard Label="Universities worldwide"
+                      Value="@Format(statistics.TotalUniversities)"
+                      Icon="bi-building" />
+        </div>
+        <div class="col">
+            <StatCard Label="Countries with universities"
+                      Value="@Format(statistics.CountryCount)"
+                      Icon="bi-globe-americas" />
+        </div>
+        <div class="col">
+            <StatCard Label="@($"Most universities ({Format(statistics.TopCountryUniversityCount)})")"
+                      Value="@(statistics.TopCountry ?? "—")"
+                      Icon="bi-trophy" />
+        </div>
+    </div>
+}
+
+@code {
+    private UniversityStatistics? statistics;
+
+    private bool isLoading = true;
+    private bool hasError;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadStatisticsAsync();
+    }
+
+    private async Task LoadStatisticsAsync()
+    {
+        isLoading = true;
+        hasError = false;
+
+        try
+        {
+            var universities = await UniversityService.GetAllUniversitiesAsync();
+            statistics = UniversityStatistics.FromUniversities(universities);
+        }
+        catch (Exception ex)
+        {
+            hasError = true;
+            Logger.LogError(ex, "Failed to load university statistics");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private static string Format(int value) => value.ToString("N0", CultureInfo.InvariantCulture);
+}
