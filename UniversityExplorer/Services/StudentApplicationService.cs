@@ -1,5 +1,4 @@
 ﻿using System.Net;
-using System.Net.Http.Json;
 using UniversityExplorer.Models;
 
 namespace UniversityExplorer.Services;
