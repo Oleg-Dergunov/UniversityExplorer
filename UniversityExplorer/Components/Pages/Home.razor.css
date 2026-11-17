@@ -1,0 +1,66 @@
+﻿.hero {
+    position: relative;
+    overflow: hidden;
+    padding: 3rem 2.5rem;
+    border-radius: 1rem;
+    background: linear-gradient(135deg, #8b1e3f 0%, #5e1329 100%);
+    color: #ffffff;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 1;
+    max-width: 38rem;
+}
+
+.hero-eyebrow {
+    color: rgba(255, 255, 255, 0.75);
+}
+
+.hero-title {
+    font-size: clamp(2rem, 4vw, 2.75rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+}
+
+.hero-lead {
+    font-size: 1.125rem;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.hero-decoration {
+    position: absolute;
+    right: 1rem;
+    bottom: -3.5rem;
+    font-size: 15rem;
+    line-height: 1;
+    color: rgba(255, 255, 255, 0.08);
+    pointer-events: none;
+}
+
+.source-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.85rem;
+    border: 1px solid var(--ue-border);
+    border-radius: 999px;
+    background-color: var(--ue-surface);
+    color: var(--bs-secondary-color);
+    font-size: 0.85rem;
+}
+
+    .source-chip strong {
+        color: var(--bs-body-color);
+        font-weight: 600;
+    }
+
+@media (max-width: 767.98px) {
+    .hero {
+        padding: 2rem 1.5rem;
+    }
+
+    .hero-decoration {
+        display: none;
+    }
+}
