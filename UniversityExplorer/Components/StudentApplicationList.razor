@@ -27,13 +27,13 @@
                     <td>@application.CourseName</td>
                     <td>@FormatDate(application.ApplicationDate)</td>
                     <td class="text-end text-nowrap">
-                        <button type="button" class="btn btn-sm btn-outline-primary"
+                        <button type="button" class="btn btn-sm btn-outline-secondary"
                                 @onclick="() => OnEdit.InvokeAsync(application)">
                             <i class="bi bi-pencil-square me-1" aria-hidden="true"></i>Edit
                         </button>
                         @if (OnDelete.HasDelegate)
                         {
-                            <button type="button" class="btn btn-sm btn-outline-danger ms-1"
+                            <button type="button" class="btn btn-sm btn-outline-primary ms-1"
                                     @onclick="() => OnDelete.InvokeAsync(application)">
                                 <i class="bi bi-trash me-1" aria-hidden="true"></i>Delete
                             </button>

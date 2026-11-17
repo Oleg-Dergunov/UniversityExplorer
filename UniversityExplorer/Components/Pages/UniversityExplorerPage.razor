@@ -81,7 +81,7 @@ else
                     </div>
 
                     <button type="button"
-                            class="btn @(showFavouritesOnly ? "btn-warning" : "btn-outline-secondary") text-nowrap"
+                            class="btn @(showFavouritesOnly ? "btn-primary" : "btn-outline-secondary") text-nowrap"
                             title="@(showFavouritesOnly ? "Showing favourites only. Click to show all" : "Show favourites only")"
                             aria-pressed="@showFavouritesOnly.ToString().ToLowerInvariant()"
                             @onclick="ToggleFavouritesFilterAsync">

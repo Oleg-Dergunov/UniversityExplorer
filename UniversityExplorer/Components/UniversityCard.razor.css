@@ -4,5 +4,5 @@
 }
 
     .favourite-toggle:hover i {
-        color: var(--bs-warning) !important;
+        color: var(--ue-primary) !important;
     }

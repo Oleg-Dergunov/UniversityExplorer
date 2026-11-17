@@ -10,7 +10,7 @@
                         aria-label="@(IsFavourite ? "Remove from favourites" : "Add to favourites")"
                         aria-pressed="@IsFavourite.ToString().ToLowerInvariant()"
                         @onclick="() => OnToggleFavourite.InvokeAsync(University)">
-                    <i class="bi @(IsFavourite ? "bi-star-fill text-warning" : "bi-star text-secondary")" aria-hidden="true"></i>
+                    <i class="bi @(IsFavourite ? "bi-star-fill text-primary" : "bi-star text-secondary")" aria-hidden="true"></i>
                 </button>
             }
         </div>
