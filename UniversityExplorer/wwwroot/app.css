@@ -9,11 +9,14 @@
     --ue-primary-active: #5e1329;
     --ue-primary-rgb: 139, 30, 63;
     --ue-on-primary: #ffffff;
-    --ue-page-bg: #f7f6f4;
+    --ue-page-bg: #f5f1f2;
     --ue-surface: #ffffff;
     --ue-border: #e7e3e0;
-    --ue-shadow: 0 1px 2px rgba(28, 25, 23, 0.04), 0 2px 8px rgba(28, 25, 23, 0.05);
-    --ue-shadow-lg: 0 4px 12px rgba(28, 25, 23, 0.08), 0 12px 32px rgba(28, 25, 23, 0.08);
+    --ue-sidebar-bg: linear-gradient(180deg, #ffffff 0%, #fbf3f5 45%, #f3dfe5 100%);
+    --ue-shadow-xs: 0 1px 2px rgba(60, 20, 35, 0.08);
+    --ue-shadow: 0 1px 3px rgba(60, 20, 35, 0.08), 0 6px 16px rgba(60, 20, 35, 0.08);
+    --ue-shadow-lg: 0 8px 20px rgba(60, 20, 35, 0.12), 0 20px 48px rgba(60, 20, 35, 0.12);
+    --ue-shadow-hero: 0 16px 40px rgba(139, 30, 63, 0.3);
     /* Bootstrap variables mapped to the design tokens */
     --bs-primary: var(--ue-primary);
     --bs-primary-rgb: var(--ue-primary-rgb);
@@ -38,11 +41,14 @@
     --ue-primary-active: #f2b8c7;
     --ue-primary-rgb: 224, 128, 154;
     --ue-on-primary: #1f0b12;
-    --ue-page-bg: #111113;
+    --ue-page-bg: #121012;
     --ue-surface: #1b1b1f;
     --ue-border: #2e2e34;
+    --ue-sidebar-bg: linear-gradient(180deg, #1b1b1f 0%, #1f1a1d 45%, #2a171d 100%);
+    --ue-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.4);
     --ue-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
     --ue-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+    --ue-shadow-hero: 0 16px 40px rgba(0, 0, 0, 0.5);
     --bs-primary: var(--ue-primary);
     --bs-primary-rgb: var(--ue-primary-rgb);
     --bs-primary-bg-subtle: #3a1721;
@@ -236,42 +242,6 @@ h1:focus {
 }
 
 /* =========================================================
-   Blazor error UI (from the project template)
-   ========================================================= */
-
-#blazor-error-ui {
-    color-scheme: light only;
-    background: lightyellow;
-    bottom: 0;
-    box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
-    box-sizing: border-box;
-    display: none;
-    left: 0;
-    padding: 0.6rem 1.25rem 0.7rem 1.25rem;
-    position: fixed;
-    width: 100%;
-    z-index: 1000;
-}
-
-    #blazor-error-ui .dismiss {
-        cursor: pointer;
-        position: absolute;
-        right: 0.75rem;
-        top: 0.5rem;
-    }
-
-.blazor-error-boundary {
-    background: #b32121;
-    padding: 1rem;
-    color: white;
-}
-
-    .blazor-error-boundary::after {
-        content: "An error has occurred.";
-    }
-
-
-/* =========================================================
    Shared UI helpers
    ========================================================= */
 
@@ -320,3 +290,38 @@ h1:focus {
             transform: none;
         }
 }
+
+/* =========================================================
+   Blazor error UI (from the project template)
+   ========================================================= */
+
+#blazor-error-ui {
+    color-scheme: light only;
+    background: lightyellow;
+    bottom: 0;
+    box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
+    box-sizing: border-box;
+    display: none;
+    left: 0;
+    padding: 0.6rem 1.25rem 0.7rem 1.25rem;
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+}
+
+    #blazor-error-ui .dismiss {
+        cursor: pointer;
+        position: absolute;
+        right: 0.75rem;
+        top: 0.5rem;
+    }
+
+.blazor-error-boundary {
+    background: #b32121;
+    padding: 1rem;
+    color: white;
+}
+
+    .blazor-error-boundary::after {
+        content: "An error has occurred.";
+    }

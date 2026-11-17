@@ -4,6 +4,7 @@
     padding: 3rem 2.5rem;
     border-radius: 1rem;
     background: linear-gradient(135deg, #8b1e3f 0%, #5e1329 100%);
+    box-shadow: var(--ue-shadow-hero);
     color: #ffffff;
 }
 
@@ -46,6 +47,7 @@
     border: 1px solid var(--ue-border);
     border-radius: 999px;
     background-color: var(--ue-surface);
+    box-shadow: var(--ue-shadow-xs);
     color: var(--bs-secondary-color);
     font-size: 0.85rem;
 }

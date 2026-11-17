@@ -12,7 +12,7 @@ main {
 
 .sidebar {
     position: relative;
-    background-color: var(--ue-surface);
+    background: var(--ue-sidebar-bg);
     border-bottom: 1px solid var(--ue-border);
 }
 

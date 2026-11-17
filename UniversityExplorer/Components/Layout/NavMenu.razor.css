@@ -22,8 +22,9 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    background-color: var(--ue-primary);
-    color: var(--ue-on-primary);
+    background: linear-gradient(135deg, #8b1e3f 0%, #5e1329 100%);
+    box-shadow: 0 4px 10px rgba(139, 30, 63, 0.3);
+    color: #ffffff;
     font-size: 1.05rem;
 }
 
@@ -65,6 +66,7 @@
 
 .nav-item ::deep .nav-link,
 .footer-link {
+    position: relative;
     display: flex;
     align-items: center;
     gap: 0.75rem;
@@ -74,11 +76,12 @@
     font-size: 0.925rem;
     font-weight: 500;
     text-decoration: none;
+    transition: background-color 0.15s ease, color 0.15s ease;
 }
 
     .nav-item ::deep .nav-link:hover,
     .footer-link:hover {
-        background-color: var(--bs-tertiary-bg);
+        background-color: rgba(var(--ue-primary-rgb), 0.06);
         color: var(--bs-body-color);
     }
 
@@ -87,6 +90,18 @@
         color: var(--ue-primary);
         font-weight: 600;
     }
+
+        /* Accent bar on the left edge of the sidebar for the active page */
+        .nav-item ::deep .nav-link.active::before {
+            content: "";
+            position: absolute;
+            left: -0.75rem;
+            top: 0.5rem;
+            bottom: 0.5rem;
+            width: 3px;
+            border-radius: 0 3px 3px 0;
+            background-color: var(--ue-primary);
+        }
 
     .nav-item ::deep .bi,
     .footer-link .bi {
@@ -102,18 +117,27 @@
     border-top: 1px solid var(--ue-border);
 }
 
+@media (prefers-reduced-motion: reduce) {
+    .nav-item ::deep .nav-link,
+    .footer-link {
+        transition: none;
+    }
+}
+
 @media (min-width: 641px) {
     .navbar-toggler {
         display: none;
     }
 
-    /* Column layout pushes the footer to the bottom of the sidebar */
-    .nav-scrollable {
-        display: flex;
-        flex-direction: column;
-        height: calc(100vh - 3.5rem);
-        overflow-y: auto;
-    }
+        /* Column layout pushes the footer to the bottom of the sidebar.
+       The toggler state is irrelevant on larger screens, so both selectors are covered. */
+        .nav-scrollable,
+        .navbar-toggler:checked ~ .nav-scrollable {
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 3.5rem);
+            overflow-y: auto;
+        }
 
     .sidebar-footer {
         margin-top: auto;
