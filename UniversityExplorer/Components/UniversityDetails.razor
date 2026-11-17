@@ -6,70 +6,76 @@
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable"
          @onclick:stopPropagation="true">
         <div class="modal-content">
-            <div class="modal-header">
-                <div>
-                    <small class="text-muted text-uppercase">University Details</small>
-                    <h2 class="modal-title h5 mb-0" id="university-details-title">@University.Name</h2>
-                </div>
-                <button type="button" class="btn-close" aria-label="Close" @onclick="CloseAsync"></button>
-            </div>
-
-            <div class="modal-body">
-                <dl class="row mb-0">
-                    <dt class="col-sm-4">Name</dt>
-                    <dd class="col-sm-8">@University.Name</dd>
-
-                    <dt class="col-sm-4">Country</dt>
-                    <dd class="col-sm-8">
+            <div class="modal-header align-items-start p-4">
+                <div class="min-w-0 me-3">
+                    <div class="eyebrow text-muted mb-1">University details</div>
+                    <h2 class="h4 mb-1 text-break" id="university-details-title">@University.Name</h2>
+                    <div class="d-flex align-items-center gap-2 text-muted small">
                         @if (!string.IsNullOrWhiteSpace(Country?.Flags?.Png))
                         {
-                            <img src="@Country.Flags.Png" alt="" class="details-flag me-2" />
+                            <img src="@Country.Flags.Png" alt="" class="details-flag" />
                         }
-                        @University.Country
-                        @if (!string.IsNullOrWhiteSpace(Country?.Region))
-                        {
-                            <small class="text-muted d-block">
-                                @Country.Region@(string.IsNullOrWhiteSpace(Country.Subregion) ? "" : $" · {Country.Subregion}")
-                            </small>
-                        }
-                    </dd>
+                        <span>@CountryLine</span>
+                    </div>
+                </div>
 
-                    @if (!string.IsNullOrWhiteSpace(University.AlphaTwoCode))
+                <div class="d-flex align-items-center gap-3 ms-auto">
+                    @if (OnToggleFavourite.HasDelegate)
                     {
-                        <dt class="col-sm-4">Country code</dt>
-                        <dd class="col-sm-8">@University.AlphaTwoCode</dd>
+                        <button type="button" class="btn btn-link p-0 lh-1 favourite-toggle"
+                                title="@(IsFavourite ? "Remove from favourites" : "Add to favourites")"
+                                aria-label="@(IsFavourite ? "Remove from favourites" : "Add to favourites")"
+                                aria-pressed="@IsFavourite.ToString().ToLowerInvariant()"
+                                @onclick="() => OnToggleFavourite.InvokeAsync(University)">
+                            <i class="bi @(IsFavourite ? "bi-star-fill text-primary" : "bi-star text-secondary")" aria-hidden="true"></i>
+                        </button>
                     }
+                    <button type="button" class="btn-close" aria-label="Close" @onclick="CloseAsync"></button>
+                </div>
+            </div>
+
+            <div class="modal-body px-4 py-2">
+                <dl class="mb-0">
+                    <div class="details-row">
+                        <dt><i class="bi bi-link-45deg" aria-hidden="true"></i>Website</dt>
+                        <dd>
+                            @if (University.WebPages.Count == 0)
+                            {
+                                <span class="text-muted">Not available</span>
+                            }
+                            @foreach (var webPage in University.WebPages)
+                            {
+                                <a href="@webPage" target="_blank" rel="noopener noreferrer" class="d-block">
+                                    @GetHost(webPage)<i class="bi bi-box-arrow-up-right ms-1 small" aria-hidden="true"></i>
+                                </a>
+                            }
+                        </dd>
+                    </div>
+
+                    <div class="details-row">
+                        <dt><i class="bi bi-at" aria-hidden="true"></i>Domain</dt>
+                        <dd>@(University.Domains.Count == 0 ? "Not available" : string.Join(", ", University.Domains))</dd>
+                    </div>
+
+                    <div class="details-row">
+                        <dt><i class="bi bi-hash" aria-hidden="true"></i>Country code</dt>
+                        <dd>@(University.AlphaTwoCode ?? "Not available")</dd>
+                    </div>
 
                     @if (!string.IsNullOrWhiteSpace(University.StateProvince))
                     {
-                        <dt class="col-sm-4">State / Province</dt>
-                        <dd class="col-sm-8">@University.StateProvince</dd>
+                        <div class="details-row">
+                            <dt><i class="bi bi-signpost" aria-hidden="true"></i>State / Province</dt>
+                            <dd>@University.StateProvince</dd>
+                        </div>
                     }
-
-                    <dt class="col-sm-4">Website</dt>
-                    <dd class="col-sm-8">
-                        @if (University.WebPages.Count == 0)
-                        {
-                            <span>N/A</span>
-                        }
-                        @foreach (var webPage in University.WebPages)
-                        {
-                            <a href="@webPage" target="_blank" rel="noopener noreferrer" class="d-block text-break">@webPage</a>
-                        }
-                    </dd>
-
-                    <dt class="col-sm-4">Domain</dt>
-                    <dd class="col-sm-8 mb-0 text-break">
-                        @(University.Domains.Count == 0 ? "N/A" : string.Join(", ", University.Domains))
-                    </dd>
                 </dl>
             </div>
 
-            <div class="modal-footer">
+            <div class="modal-footer px-4">
                 <a href="@ApplyUrl" class="btn btn-primary">
                     <i class="bi bi-send me-1" aria-hidden="true"></i>Apply to this university
                 </a>
-                <button type="button" class="btn btn-outline-secondary" @onclick="CloseAsync">Close</button>
             </div>
         </div>
     </div>
@@ -86,7 +92,22 @@
     public Country? Country { get; set; }
 
     [Parameter]
+    public bool IsFavourite { get; set; }
+
+    [Parameter]
+    public EventCallback<University> OnToggleFavourite { get; set; }
+
+    [Parameter]
     public EventCallback OnClose { get; set; }
+
+    private string CountryLine
+    {
+        get
+        {
+            var region = Country?.Subregion ?? Country?.Region;
+            return string.IsNullOrWhiteSpace(region) ? University.Country : $"{University.Country} · {region}";
+        }
+    }
 
     private string ApplyUrl =>
         $"student-applications/create" +
@@ -95,11 +116,15 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        // Focus the modal so that the Escape key works immediately
         if (firstRender)
         {
             await modalElement.FocusAsync();
         }
     }
+
+    private static string GetHost(string url) =>
+        Uri.TryCreate(url, UriKind.Absolute, out var uri) ? uri.Host : url;
 
     private Task CloseAsync() => OnClose.InvokeAsync();
 

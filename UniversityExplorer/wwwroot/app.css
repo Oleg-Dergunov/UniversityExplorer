@@ -14,7 +14,9 @@
     --ue-surface: #ffffff;
     --ue-border: #e7e3e0;
     --ue-sidebar-bg: linear-gradient(180deg, #ffffff 0%, #fbf3f5 45%, #f3dfe5 100%);
-    --ue-shadow-xs: 0 1px 2px rgba(60, 20, 35, 0.08);
+    --ue-shadow-xs: 0 1px 2px rgba(60, 20, 35, 0.1), 0 2px 6px rgba(60, 20, 35, 0.08);
+    --ue-shadow-control: 0 1px 2px rgba(60, 20, 35, 0.18), 0 1px 4px rgba(60, 20, 35, 0.12);
+    --ue-shadow-control-hover: 0 2px 4px rgba(60, 20, 35, 0.22), 0 3px 8px rgba(60, 20, 35, 0.14);
     --ue-shadow: 0 1px 3px rgba(60, 20, 35, 0.08), 0 6px 16px rgba(60, 20, 35, 0.08);
     --ue-shadow-lg: 0 8px 20px rgba(60, 20, 35, 0.12), 0 20px 48px rgba(60, 20, 35, 0.12);
     --ue-shadow-hero: 0 16px 40px rgba(139, 30, 63, 0.3);
@@ -48,6 +50,8 @@
     --ue-border: #2e2e34;
     --ue-sidebar-bg: linear-gradient(180deg, #1b1b1f 0%, #1f1a1d 45%, #2a171d 100%);
     --ue-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --ue-shadow-control: 0 1px 3px rgba(0, 0, 0, 0.6);
+    --ue-shadow-control-hover: 0 2px 6px rgba(0, 0, 0, 0.7);
     --ue-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
     --ue-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
     --ue-shadow-hero: 0 16px 40px rgba(0, 0, 0, 0.5);
@@ -138,6 +142,28 @@ h1:focus {
     font-weight: 500;
 }
 
+    /* Raised buttons: a shadow at rest, lifting on hover and pressing down on click.
+   Link-style buttons (stars, "View details") stay flat. */
+    .btn:not(.btn-link) {
+        box-shadow: var(--ue-shadow-control);
+        transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+    }
+
+        .btn:not(.btn-link):hover {
+            transform: translateY(-1px);
+            box-shadow: var(--ue-shadow-control-hover);
+        }
+
+.btn:not(.btn-link):active {
+    transform: translateY(0);
+    box-shadow: var(--ue-shadow-control);
+}
+
+/* Keep Bootstrap's keyboard focus ring visible */
+.btn:not(.btn-link):focus-visible {
+    box-shadow: var(--bs-btn-focus-box-shadow);
+}
+
 .btn-primary {
     --bs-btn-color: var(--ue-on-primary);
     --bs-btn-bg: var(--ue-primary);
@@ -175,12 +201,24 @@ h1:focus {
 .form-control,
 .form-select {
     background-color: var(--ue-surface);
+    box-shadow: var(--ue-shadow-control);
 }
 
     .form-control:focus,
     .form-select:focus {
         border-color: rgba(var(--ue-primary-rgb), 0.5);
         box-shadow: 0 0 0 0.2rem rgba(var(--ue-primary-rgb), 0.15);
+    }
+
+/* Inside an input group the whole group gets one shadow instead of each part */
+.input-group {
+    border-radius: var(--bs-border-radius);
+    box-shadow: var(--ue-shadow-control);
+}
+
+    .input-group > .form-control:not(:focus),
+    .input-group > .form-select:not(:focus) {
+        box-shadow: none;
     }
 
 .form-label {
@@ -247,6 +285,10 @@ h1:focus {
    Shared UI helpers
    ========================================================= */
 
+.min-w-0 {
+    min-width: 0;
+}
+
 .icon-badge {
     flex-shrink: 0;
     width: 3rem;
@@ -283,18 +325,40 @@ h1:focus {
     text-transform: uppercase;
 }
 
+.detail-label {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-bottom: 0.15rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--bs-secondary-color);
+}
+
+.detail-value {
+    margin-bottom: 0;
+    font-weight: 600;
+}
+
+.favourite-toggle {
+    font-size: 1.25rem;
+    text-decoration: none;
+}
+
+    .favourite-toggle:hover i {
+        color: var(--ue-primary) !important;
+    }
+
 @media (prefers-reduced-motion: reduce) {
-    .card-hover {
+    .card-hover,
+    .btn:not(.btn-link) {
         transition: none;
     }
 
-        .card-hover:hover {
+        .card-hover:hover,
+        .btn:not(.btn-link):hover {
             transform: none;
         }
-}
-
-.min-w-0 {
-    min-width: 0;
 }
 
 /* =========================================================

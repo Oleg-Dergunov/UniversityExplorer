@@ -4,3 +4,12 @@
         top: 7rem;
     }
 }
+
+.favourites-filter {
+    --bs-btn-hover-color: var(--ue-on-primary);
+    --bs-btn-hover-bg: var(--ue-primary);
+    --bs-btn-hover-border-color: var(--ue-primary);
+    --bs-btn-active-color: var(--ue-on-primary);
+    --bs-btn-active-bg: var(--ue-primary-active);
+    --bs-btn-active-border-color: var(--ue-primary-active);
+}

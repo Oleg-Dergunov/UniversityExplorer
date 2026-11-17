@@ -47,7 +47,10 @@ else
 
 @if (selectedUniversity is not null)
 {
-    <UniversityDetails University="selectedUniversity" OnClose="CloseUniversityDetails" />
+    <UniversityDetails University="selectedUniversity"
+                       IsFavourite="FavouritesService.IsFavourite(selectedUniversity)"
+                       OnToggleFavourite="HandleToggleFavouriteAsync"
+                       OnClose="CloseUniversityDetails" />
 }
 
 @code {

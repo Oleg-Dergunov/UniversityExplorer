@@ -17,15 +17,6 @@
     z-index: 2;
 }
 
-.favourite-toggle {
-    font-size: 1.25rem;
-    text-decoration: none;
-}
-
-    .favourite-toggle:hover i {
-        color: var(--ue-primary) !important;
-    }
-
 .is-selected {
     border-color: var(--bs-primary-border-subtle);
 }
