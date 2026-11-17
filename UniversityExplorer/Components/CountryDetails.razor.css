@@ -1,6 +1,22 @@
 ﻿.country-flag {
-    width: 80px;
+    width: 72px;
     height: auto;
-    border: 1px solid #dee2e6;
-    border-radius: 4px;
+    border: 1px solid var(--ue-border);
+    border-radius: 0.375rem;
+    box-shadow: var(--ue-shadow-xs);
+}
+
+.detail-label {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-bottom: 0.15rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--bs-secondary-color);
+}
+
+.detail-value {
+    margin-bottom: 0;
+    font-weight: 600;
 }

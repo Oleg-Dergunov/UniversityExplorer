@@ -1,0 +1,17 @@
+﻿/* Negative margins stretch the header to the edges of the content area (px-4 / py-4 = 1.5rem) */
+.page-header {
+    margin: -1.5rem -1.5rem 1.5rem;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--ue-border);
+    background-color: rgba(var(--ue-page-bg-rgb), 0.85);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+@media (min-width: 768px) {
+    .page-header {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+    }
+}

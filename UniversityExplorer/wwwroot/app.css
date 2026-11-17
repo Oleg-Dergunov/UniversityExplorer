@@ -10,6 +10,7 @@
     --ue-primary-rgb: 139, 30, 63;
     --ue-on-primary: #ffffff;
     --ue-page-bg: #f5f1f2;
+    --ue-page-bg-rgb: 245, 241, 242;
     --ue-surface: #ffffff;
     --ue-border: #e7e3e0;
     --ue-sidebar-bg: linear-gradient(180deg, #ffffff 0%, #fbf3f5 45%, #f3dfe5 100%);
@@ -42,6 +43,7 @@
     --ue-primary-rgb: 224, 128, 154;
     --ue-on-primary: #1f0b12;
     --ue-page-bg: #121012;
+    --ue-page-bg-rgb: 18, 16, 18;
     --ue-surface: #1b1b1f;
     --ue-border: #2e2e34;
     --ue-sidebar-bg: linear-gradient(180deg, #1b1b1f 0%, #1f1a1d 45%, #2a171d 100%);
@@ -289,6 +291,10 @@ h1:focus {
         .card-hover:hover {
             transform: none;
         }
+}
+
+.min-w-0 {
+    min-width: 0;
 }
 
 /* =========================================================

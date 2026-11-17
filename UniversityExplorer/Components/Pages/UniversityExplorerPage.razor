@@ -9,7 +9,9 @@
 
 <PageTitle>University Explorer</PageTitle>
 
-<h1 class="mb-4">University Explorer</h1>
+<PageHeader Title="University Explorer"
+            Subtitle="Choose a country to see its details and browse its universities."
+            Icon="bi-globe-americas" />
 
 @if (isLoadingCountries)
 {
@@ -41,7 +43,9 @@ else
         <div class="col-12 col-lg-8">
             @if (selectedCountry is null)
             {
-                <p class="text-muted mt-4">Select a country to see its universities.</p>
+                <EmptyState Icon="bi-globe-americas" Title="No country selected">
+                    Choose a country from the list to see its universities.
+                </EmptyState>
             }
             else if (isLoadingUniversities)
             {
@@ -54,7 +58,9 @@ else
             }
             else if (universities.Count == 0)
             {
-                <div class="alert alert-info">No universities found for @selectedCountry.Name.</div>
+                <EmptyState Icon="bi-building" Title="@($"No universities found for {selectedCountry.Name}")">
+                    The Universities API has no records for this country.
+                </EmptyState>
             }
             else
             {
@@ -64,9 +70,9 @@ else
                 var visiblePage = Math.Min(currentPage, totalPages);
                 var pageItems = filtered.Skip((visiblePage - 1) * PageSize).Take(PageSize).ToList();
 
-                <div class="d-flex justify-content-between align-items-center mb-2">
+                <div class="d-flex justify-content-between align-items-center mb-3">
                     <h2 class="h5 mb-0">Universities in @selectedCountry.Name</h2>
-                    <span class="badge text-bg-secondary">@filtered.Count of @universities.Count</span>
+                    <span class="badge badge-soft rounded-pill">@filtered.Count of @universities.Count</span>
                 </div>
 
                 <div class="d-flex gap-2 mb-3">
@@ -99,14 +105,15 @@ else
                 {
                     @if (showFavouritesOnly && string.IsNullOrWhiteSpace(searchText))
                     {
-                        <p class="text-muted">
-                            No favourite universities in @selectedCountry.Name yet.
-                            Click the <i class="bi bi-star" aria-hidden="true"></i> on a university to add it.
-                        </p>
+                        <EmptyState Icon="bi-star" Title="@($"No favourites in {selectedCountry.Name} yet")">
+                            Click the star on a university to add it to your favourites.
+                        </EmptyState>
                     }
                     else
                     {
-                        <p class="text-muted">No universities match "@searchText".</p>
+                        <EmptyState Icon="bi-search" Title="No matching universities">
+                            Nothing matches "@searchText". Try a different search.
+                        </EmptyState>
                     }
                 }
                 else

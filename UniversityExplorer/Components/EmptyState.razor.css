@@ -1,0 +1,5 @@
+﻿.empty-state {
+    border: 1px dashed var(--ue-border);
+    border-radius: 0.75rem;
+    background-color: var(--ue-surface);
+}

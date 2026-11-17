@@ -1,4 +1,23 @@
-﻿.favourite-toggle {
+﻿.uni-monogram {
+    flex-shrink: 0;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 0.625rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--bs-primary-bg-subtle);
+    color: var(--ue-primary);
+    font-weight: 700;
+}
+
+/* Keeps interactive elements clickable above the card's stretched link */
+.above-stretched {
+    position: relative;
+    z-index: 2;
+}
+
+.favourite-toggle {
     font-size: 1.25rem;
     text-decoration: none;
 }
@@ -6,3 +25,7 @@
     .favourite-toggle:hover i {
         color: var(--ue-primary) !important;
     }
+
+.is-selected {
+    border-color: var(--bs-primary-border-subtle);
+}

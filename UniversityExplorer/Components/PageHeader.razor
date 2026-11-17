@@ -1,0 +1,41 @@
+﻿<header class="page-header">
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+        <div class="d-flex align-items-center gap-3 min-w-0">
+            @if (!string.IsNullOrWhiteSpace(Icon))
+            {
+                <div class="icon-badge" aria-hidden="true">
+                    <i class="bi @Icon"></i>
+                </div>
+            }
+            <div class="min-w-0">
+                <h1 class="mb-0">@Title</h1>
+                @if (!string.IsNullOrWhiteSpace(Subtitle))
+                {
+                    <p class="text-muted small mb-0">@Subtitle</p>
+                }
+            </div>
+        </div>
+
+        @if (ChildContent is not null)
+        {
+            <div class="d-flex flex-wrap gap-2">
+                @ChildContent
+            </div>
+        }
+    </div>
+</header>
+
+@code {
+    [Parameter, EditorRequired]
+    public string Title { get; set; } = string.Empty;
+
+    [Parameter]
+    public string? Subtitle { get; set; }
+
+    [Parameter]
+    public string? Icon { get; set; }
+
+    // Optional actions shown on the right, e.g. a "New application" button
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+}

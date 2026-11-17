@@ -1,38 +1,45 @@
 ﻿@using System.Globalization
 
 <div class="card shadow-sm">
-    <div class="card-header fw-semibold">Country Details</div>
-    <div class="card-body">
-        <dl class="row mb-0">
-            <dt class="col-5">Country</dt>
-            <dd class="col-7">@Country.Name</dd>
+    <div class="card-body p-4">
+        <div class="eyebrow text-muted mb-3">Country details</div>
 
-            <dt class="col-5">Capital</dt>
-            <dd class="col-7">@(string.IsNullOrWhiteSpace(Country.Capital) ? "N/A" : Country.Capital)</dd>
+        <div class="d-flex align-items-center gap-3 mb-4">
+            @if (!string.IsNullOrWhiteSpace(Country.Flags?.Png))
+            {
+                <img src="@Country.Flags.Png" alt="Flag of @Country.Name" class="country-flag" />
+            }
+            else if (!string.IsNullOrWhiteSpace(Country.FlagEmoji))
+            {
+                <span class="fs-1" aria-label="Flag of @Country.Name">@Country.FlagEmoji</span>
+            }
 
-            <dt class="col-5">Region</dt>
-            <dd class="col-7">
-                @(Country.Region ?? "N/A")
-                @if (!string.IsNullOrWhiteSpace(Country.Subregion))
+            <div class="min-w-0">
+                <h2 class="h4 mb-0 text-break">@Country.Name</h2>
+                @if (!string.IsNullOrWhiteSpace(Country.Subregion ?? Country.Region))
                 {
-                    <small class="text-muted d-block">@Country.Subregion</small>
+                    <div class="text-muted small">@(Country.Subregion ?? Country.Region)</div>
                 }
-            </dd>
+            </div>
+        </div>
 
-            <dt class="col-5">Population</dt>
-            <dd class="col-7">@Country.Population.ToString("N0", CultureInfo.InvariantCulture)</dd>
-
-            <dt class="col-5">Flag</dt>
-            <dd class="col-7 mb-0">
-                @if (!string.IsNullOrWhiteSpace(Country.Flags?.Png))
-                {
-                    <img src="@Country.Flags.Png" alt="Flag of @Country.Name" class="country-flag" />
-                }
-                else
-                {
-                    @(Country.FlagEmoji ?? "N/A")
-                }
-            </dd>
+        <dl class="row g-3 mb-0">
+            <div class="col-6">
+                <dt class="detail-label"><i class="bi bi-geo-alt" aria-hidden="true"></i>Capital</dt>
+                <dd class="detail-value">@(string.IsNullOrWhiteSpace(Country.Capital) ? "N/A" : Country.Capital)</dd>
+            </div>
+            <div class="col-6">
+                <dt class="detail-label"><i class="bi bi-people" aria-hidden="true"></i>Population</dt>
+                <dd class="detail-value">@Country.Population.ToString("N0", CultureInfo.InvariantCulture)</dd>
+            </div>
+            <div class="col-6">
+                <dt class="detail-label"><i class="bi bi-globe2" aria-hidden="true"></i>Region</dt>
+                <dd class="detail-value">@(Country.Region ?? "N/A")</dd>
+            </div>
+            <div class="col-6">
+                <dt class="detail-label"><i class="bi bi-hash" aria-hidden="true"></i>Country code</dt>
+                <dd class="detail-value">@(Country.Alpha2Code ?? "N/A")</dd>
+            </div>
         </dl>
     </div>
 </div>
