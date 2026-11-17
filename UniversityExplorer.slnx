@@ -1,7 +1,5 @@
 <Solution>
-  <Folder Name="/Solution Items/">
-    <File Path="tests.yml" />
-  </Folder>
+  <Folder Name="/Solution Items/" />
   <Project Path="UniversityExplorer.Tests/UniversityExplorer.Tests.csproj" Id="f9aa5692-7843-4f43-ae74-339088a8b942" />
   <Project Path="UniversityExplorer/UniversityExplorer.csproj" />
 </Solution>
