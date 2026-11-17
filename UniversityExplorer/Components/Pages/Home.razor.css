@@ -3,7 +3,7 @@
     overflow: hidden;
     padding: 3rem 2.5rem;
     border-radius: 1rem;
-    background: linear-gradient(135deg, #8b1e3f 0%, #5e1329 100%);
+    background: var(--ue-brand-gradient);
     box-shadow: var(--ue-shadow-hero);
     color: #ffffff;
 }

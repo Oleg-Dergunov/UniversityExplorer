@@ -9,6 +9,11 @@
     --ue-primary-active: #5e1329;
     --ue-primary-rgb: 139, 30, 63;
     --ue-on-primary: #ffffff;
+    /* Colour for accent text and icons; in light mode it is the same burgundy */
+    --ue-accent: var(--ue-primary);
+    /* Brand gradient used by the logo and the Home banner */
+    --ue-brand-gradient: linear-gradient(135deg, #8b1e3f 0%, #5e1329 100%);
+    --ue-brand-glow: 0 4px 10px rgba(139, 30, 63, 0.3);
     --ue-page-bg: #f5f1f2;
     --ue-page-bg-rgb: 245, 241, 242;
     --ue-surface: #ffffff;
@@ -27,7 +32,7 @@
     --bs-primary-bg-subtle: #f6e8ec;
     --bs-primary-border-subtle: #e4bcc8;
     --bs-primary-text-emphasis: #5e1329;
-    --bs-link-color: var(--ue-primary);
+    --bs-link-color: var(--ue-accent);
     --bs-link-color-rgb: var(--ue-primary-rgb);
     --bs-link-hover-color: var(--ue-primary-hover);
     --bs-link-hover-color-rgb: 116, 24, 52;
@@ -39,12 +44,16 @@
 }
 
 [data-bs-theme="dark"] {
-    /* A lighter burgundy keeps enough contrast on dark backgrounds */
-    --ue-primary: #e0809a;
-    --ue-primary-hover: #eb9fb3;
-    --ue-primary-active: #f2b8c7;
-    --ue-primary-rgb: 224, 128, 154;
-    --ue-on-primary: #1f0b12;
+    /* Burgundy is used for fills (buttons, stars, indicators) and lightens on hover.
+       Accent text and icons use a warm off-white instead of a light pink. */
+    --ue-primary: #8b1e3f;
+    --ue-primary-hover: #a02a4c;
+    --ue-primary-active: #761934;
+    --ue-primary-rgb: 139, 30, 63;
+    --ue-on-primary: #ffffff;
+    --ue-accent: #ede6e8;
+    /* Deeper brand gradient on dark backgrounds */
+    --ue-brand-gradient: linear-gradient(135deg, #8b1e3f 0%, #4a0f20 100%);
     --ue-page-bg: #121012;
     --ue-page-bg-rgb: 18, 16, 18;
     --ue-surface: #1b1b1f;
@@ -58,14 +67,14 @@
     --ue-shadow-hero: 0 16px 40px rgba(0, 0, 0, 0.5);
     --bs-primary: var(--ue-primary);
     --bs-primary-rgb: var(--ue-primary-rgb);
-    --bs-primary-bg-subtle: #3a1721;
-    --bs-primary-border-subtle: #6b2a3e;
-    --bs-primary-text-emphasis: #f2b8c7;
-    --bs-link-color: var(--ue-primary);
-    --bs-link-color-rgb: var(--ue-primary-rgb);
-    --bs-link-hover-color: var(--ue-primary-hover);
-    --bs-link-hover-color-rgb: 235, 159, 179;
-    --bs-focus-ring-color: rgba(var(--ue-primary-rgb), 0.3);
+    --bs-primary-bg-subtle: #33161f;
+    --bs-primary-border-subtle: #5c2335;
+    --bs-primary-text-emphasis: var(--ue-accent);
+    --bs-link-color: var(--ue-accent);
+    --bs-link-color-rgb: 237, 230, 232;
+    --bs-link-hover-color: #ffffff;
+    --bs-link-hover-color-rgb: 255, 255, 255;
+    --bs-focus-ring-color: rgba(var(--ue-primary-rgb), 0.4);
     --bs-body-bg: var(--ue-surface);
     --bs-body-bg-rgb: 27, 27, 31;
     --bs-secondary-bg: #26262b;
@@ -180,7 +189,7 @@ h1:focus {
 }
 
 .btn-outline-primary {
-    --bs-btn-color: var(--ue-primary);
+    --bs-btn-color: var(--ue-accent);
     --bs-btn-border-color: var(--ue-primary);
     --bs-btn-hover-color: var(--ue-on-primary);
     --bs-btn-hover-bg: var(--ue-primary);
@@ -188,9 +197,15 @@ h1:focus {
     --bs-btn-active-color: var(--ue-on-primary);
     --bs-btn-active-bg: var(--ue-primary-active);
     --bs-btn-active-border-color: var(--ue-primary-active);
-    --bs-btn-disabled-color: var(--ue-primary);
+    --bs-btn-disabled-color: var(--ue-accent);
     --bs-btn-disabled-border-color: var(--ue-primary);
     --bs-btn-focus-shadow-rgb: var(--ue-primary-rgb);
+}
+
+/* Dark mode: burgundy text on outline primary buttons, matching the border */
+[data-bs-theme="dark"] .btn-outline-primary {
+    --bs-btn-color: var(--ue-primary);
+    --bs-btn-disabled-color: var(--ue-primary);
 }
 
 /* =========================================================
@@ -263,9 +278,9 @@ h1:focus {
 
 .pagination {
     --bs-pagination-bg: var(--ue-surface);
-    --bs-pagination-color: var(--ue-primary);
-    --bs-pagination-hover-color: var(--ue-primary-hover);
-    --bs-pagination-focus-color: var(--ue-primary-hover);
+    --bs-pagination-color: var(--ue-accent);
+    --bs-pagination-hover-color: var(--bs-link-hover-color);
+    --bs-pagination-focus-color: var(--bs-link-hover-color);
     --bs-pagination-focus-box-shadow: 0 0 0 0.2rem rgba(var(--ue-primary-rgb), 0.2);
     --bs-pagination-active-color: var(--ue-on-primary);
     --bs-pagination-active-bg: var(--ue-primary);
@@ -299,7 +314,7 @@ h1:focus {
     justify-content: center;
     font-size: 1.35rem;
     background-color: var(--bs-primary-bg-subtle);
-    color: var(--ue-primary);
+    color: var(--ue-accent);
 }
 
 .card-hover {
@@ -340,6 +355,12 @@ h1:focus {
     font-weight: 600;
 }
 
+.info-box {
+    padding: 0.75rem 1rem;
+    border-radius: 0.625rem;
+    background-color: var(--bs-tertiary-bg);
+}
+
 .favourite-toggle {
     font-size: 1.25rem;
     text-decoration: none;
@@ -357,12 +378,6 @@ h1:focus {
         .card-hover:hover {
             transform: none;
         }
-}
-
-.info-box {
-    padding: 0.75rem 1rem;
-    border-radius: 0.625rem;
-    background-color: var(--bs-tertiary-bg);
 }
 
 /* =========================================================
