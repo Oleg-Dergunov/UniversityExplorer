@@ -1,0 +1,28 @@
+﻿.student-avatar {
+    flex-shrink: 0;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--bs-primary-bg-subtle);
+    color: var(--ue-primary);
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.applications-table th:first-child,
+.applications-table td:first-child {
+    padding-left: 1.25rem;
+}
+
+.applications-table th:last-child,
+.applications-table td:last-child {
+    padding-right: 1.25rem;
+}
+
+.applications-table td {
+    padding-top: 0.85rem;
+    padding-bottom: 0.85rem;
+}

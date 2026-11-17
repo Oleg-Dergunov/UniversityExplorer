@@ -108,6 +108,7 @@
 
     protected override async Task OnInitializedAsync()
     {
+        // Suggestions are optional: the form must still work if the Countries API is down
         try
         {
             countries = await CountryService.GetAllCountriesAsync();

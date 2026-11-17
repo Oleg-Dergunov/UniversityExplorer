@@ -1,7 +1,7 @@
 ﻿@media (min-width: 992px) {
     .explorer-sidebar {
         position: sticky;
-        top: 7rem;
+        top: calc(var(--ue-page-header-height) + 1.5rem);
     }
 }
 

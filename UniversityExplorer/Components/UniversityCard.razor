@@ -1,8 +1,6 @@
 ﻿<div class="card h-100 shadow-sm card-hover @(IsSelected ? "is-selected" : null)">
     <div class="card-body d-flex flex-column p-3">
         <div class="d-flex align-items-start gap-3">
-            <div class="uni-monogram" aria-hidden="true">@Monogram</div>
-
             <div class="flex-grow-1 min-w-0">
                 <h3 class="h6 mb-1">@University.Name</h3>
                 <div class="text-muted small">
@@ -45,12 +43,6 @@
 </div>
 
 @code {
-    // Words skipped when choosing the monogram letter, so that most cards don't all show "U"
-    private static readonly HashSet<string> CommonWords = new(StringComparer.OrdinalIgnoreCase)
-    {
-        "university", "of", "the", "college", "institute", "and", "for"
-    };
-
     [Parameter, EditorRequired]
     public University University { get; set; } = default!;
 
@@ -65,18 +57,4 @@
 
     [Parameter]
     public EventCallback<University> OnToggleFavourite { get; set; }
-
-    private string Monogram
-    {
-        get
-        {
-            var word = University.Name
-                .Split(' ', StringSplitOptions.RemoveEmptyEntries)
-                .Select(w => w.Trim(',', '.', '(', ')'))
-                .FirstOrDefault(w => w.Length > 0 && !CommonWords.Contains(w))
-                ?? University.Name;
-
-            return word.Length > 0 ? char.ToUpperInvariant(word[0]).ToString() : "?";
-        }
-    }
 }

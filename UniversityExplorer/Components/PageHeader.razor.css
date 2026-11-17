@@ -1,5 +1,8 @@
-﻿/* Negative margins stretch the header to the edges of the content area (px-4 / py-4 = 1.5rem) */
-.page-header {
+﻿.page-header {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: var(--ue-page-header-height);
     margin: -1.5rem -1.5rem 1.5rem;
     padding: 1.25rem 1.5rem;
     border-bottom: 1px solid var(--ue-border);

@@ -4,13 +4,14 @@
 
 <PageTitle>Favourite Universities</PageTitle>
 
-<h1 class="mb-4">
-    Favourite Universities
-    @if (isLoaded)
+<PageHeader Title="Favourite Universities"
+            Subtitle="Universities you have starred. They are saved in this browser's local storage."
+            Icon="bi-star">
+    @if (isLoaded && FavouritesService.Favourites.Count > 0)
     {
-        <span class="badge text-bg-secondary fs-6 align-middle">@FavouritesService.Favourites.Count</span>
+        <span class="badge badge-soft rounded-pill fs-6 align-self-center">@FavouritesService.Favourites.Count saved</span>
     }
-</h1>
+</PageHeader>
 
 @if (!isLoaded)
 {
@@ -18,11 +19,10 @@
 }
 else if (FavouritesService.Favourites.Count == 0)
 {
-    <div class="alert alert-info">
-        You have no favourite universities yet. Open the
-        <a href="university-explorer" class="alert-link">University Explorer</a>
+    <EmptyState Icon="bi-star" Title="No favourite universities yet">
+        Open the <a href="university-explorer">University Explorer</a>
         and click the star on a university to save it here.
-    </div>
+    </EmptyState>
 }
 else
 {
@@ -38,11 +38,6 @@ else
             </div>
         }
     </div>
-
-    <p class="text-muted small mt-4 mb-0">
-        <i class="bi bi-info-circle me-1" aria-hidden="true"></i>
-        Favourites are saved in this browser's local storage.
-    </p>
 }
 
 @if (selectedUniversity is not null)

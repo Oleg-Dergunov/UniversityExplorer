@@ -1,48 +1,55 @@
 ﻿@using System.Globalization
 
-<div class="table-responsive">
-    <table class="table table-striped table-hover align-middle">
-        <thead class="table-light">
-            <tr>
-                <th scope="col">Id</th>
-                <th scope="col">Student Name</th>
-                <th scope="col">University Name</th>
-                <th scope="col">Country</th>
-                <th scope="col">Course Name</th>
-                <th scope="col">Application Date</th>
-                <th scope="col" class="text-end">Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var application in Applications)
-            {
-                <tr @key="application.Id" class="@(application.Id == HighlightedId ? "table-success" : null)">
-                    <td>@application.Id</td>
-                    <td>
-                        <div class="fw-semibold">@application.StudentName</div>
-                        <small class="text-muted">@application.Email</small>
-                    </td>
-                    <td>@application.UniversityName</td>
-                    <td>@application.Country</td>
-                    <td>@application.CourseName</td>
-                    <td>@FormatDate(application.ApplicationDate)</td>
-                    <td class="text-end text-nowrap">
-                        <button type="button" class="btn btn-sm btn-outline-secondary"
-                                @onclick="() => OnEdit.InvokeAsync(application)">
-                            <i class="bi bi-pencil-square me-1" aria-hidden="true"></i>Edit
-                        </button>
-                        @if (OnDelete.HasDelegate)
-                        {
-                            <button type="button" class="btn btn-sm btn-outline-primary ms-1"
-                                    @onclick="() => OnDelete.InvokeAsync(application)">
-                                <i class="bi bi-trash me-1" aria-hidden="true"></i>Delete
-                            </button>
-                        }
-                    </td>
+<div class="card shadow-sm overflow-hidden">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0 applications-table">
+            <thead>
+                <tr>
+                    <th scope="col">Id</th>
+                    <th scope="col">Student Name</th>
+                    <th scope="col">University Name</th>
+                    <th scope="col">Country</th>
+                    <th scope="col">Course Name</th>
+                    <th scope="col">Application Date</th>
+                    <th scope="col" class="text-end">Actions</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var application in Applications)
+                {
+                    <tr @key="application.Id" class="@(application.Id == HighlightedId ? "table-success" : null)">
+                        <td class="text-muted small">#@application.Id</td>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="student-avatar" aria-hidden="true">@GetInitials(application.StudentName)</span>
+                                <div class="min-w-0">
+                                    <div class="fw-semibold text-truncate">@application.StudentName</div>
+                                    <div class="text-muted small text-truncate">@application.Email</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>@application.UniversityName</td>
+                        <td>@application.Country</td>
+                        <td>@application.CourseName</td>
+                        <td class="text-nowrap">@FormatDate(application.ApplicationDate)</td>
+                        <td class="text-end text-nowrap">
+                            <button type="button" class="btn btn-sm btn-outline-secondary"
+                                    @onclick="() => OnEdit.InvokeAsync(application)">
+                                <i class="bi bi-pencil-square me-1" aria-hidden="true"></i>Edit
+                            </button>
+                            @if (OnDelete.HasDelegate)
+                            {
+                                <button type="button" class="btn btn-sm btn-outline-primary ms-1"
+                                        @onclick="() => OnDelete.InvokeAsync(application)">
+                                    <i class="bi bi-trash me-1" aria-hidden="true"></i>Delete
+                                </button>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 </div>
 
 @code {
@@ -60,4 +67,17 @@
 
     private static string FormatDate(DateTime? date) =>
         date?.ToString("dd MMM yyyy", CultureInfo.InvariantCulture) ?? "—";
+
+    // "Arthur Veloso" -> "AV", "Lucas" -> "L"
+    private static string GetInitials(string name)
+    {
+        var parts = name.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+        return parts.Length switch
+        {
+            0 => "?",
+            1 => parts[0][..1].ToUpperInvariant(),
+            _ => (parts[0][..1] + parts[^1][..1]).ToUpperInvariant()
+        };
+    }
 }
