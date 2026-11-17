@@ -5,7 +5,9 @@
 
 <PageTitle>Create Student Application</PageTitle>
 
-<h1 class="mb-4">Create Student Application</h1>
+<PageHeader Title="Create Student Application"
+            Subtitle="Fill in the details below to apply to a university programme."
+            Icon="bi-plus-square" />
 
 @if (submittedApplication is not null)
 {
@@ -26,14 +28,10 @@
     <ErrorAlert Message="Unable to submit the application. Please try again." />
 }
 
-<div class="card shadow-sm">
-    <div class="card-body">
-        <StudentApplicationForm Model="application"
-                                SubmitText="Submit application"
-                                IsSubmitting="isSubmitting"
-                                OnValidSubmit="HandleSubmitAsync" />
-    </div>
-</div>
+<StudentApplicationForm Model="application"
+                        SubmitText="Submit application"
+                        IsSubmitting="isSubmitting"
+                        OnValidSubmit="HandleSubmitAsync" />
 
 @code {
     [SupplyParameterFromQuery(Name = "country")]

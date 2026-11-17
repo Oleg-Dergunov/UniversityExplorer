@@ -5,22 +5,33 @@
      @onkeydown="HandleKeyDownAsync">
     <div class="modal-dialog modal-dialog-centered" @onclick:stopPropagation="true">
         <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title h5" id="confirm-dialog-title">@Title</h2>
+            <div class="modal-header border-0 align-items-start p-4 pb-3">
+                <div class="d-flex align-items-center gap-3 min-w-0 me-3">
+                    <div class="icon-badge" aria-hidden="true">
+                        <i class="bi @Icon"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <h2 class="modal-title h5 mb-0" id="confirm-dialog-title">@Title</h2>
+                        @if (!string.IsNullOrWhiteSpace(Subtitle))
+                        {
+                            <p class="text-muted small mb-0">@Subtitle</p>
+                        }
+                    </div>
+                </div>
                 <button type="button" class="btn-close" aria-label="Close"
                         disabled="@IsProcessing" @onclick="CancelAsync"></button>
             </div>
 
-            <div class="modal-body">
+            <div class="modal-body px-4 py-0">
                 @ChildContent
             </div>
 
-            <div class="modal-footer">
+            <div class="modal-footer border-0 p-4 pt-3">
                 <button type="button" class="btn btn-outline-secondary"
                         disabled="@IsProcessing" @onclick="CancelAsync">
                     Cancel
                 </button>
-                <button type="button" class="btn btn-danger"
+                <button type="button" class="btn btn-primary"
                         disabled="@IsProcessing" @onclick="() => OnConfirm.InvokeAsync()">
                     @if (IsProcessing)
                     {
@@ -39,6 +50,12 @@
 
     [Parameter]
     public string Title { get; set; } = "Are you sure?";
+
+    [Parameter]
+    public string? Subtitle { get; set; }
+
+    [Parameter]
+    public string Icon { get; set; } = "bi-exclamation-triangle";
 
     [Parameter]
     public string ConfirmText { get; set; } = "Confirm";

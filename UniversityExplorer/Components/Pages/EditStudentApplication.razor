@@ -7,7 +7,7 @@
 
 <PageTitle>Edit Application</PageTitle>
 
-<h1 class="mb-4">Edit Application <span class="text-muted fs-4">#@Id</span></h1>
+<PageHeader Title="Edit Application" Subtitle="@Subtitle" Icon="bi-pencil-square" />
 
 @if (isLoading)
 {
@@ -20,10 +20,9 @@ else if (hasLoadError)
 }
 else if (application is null)
 {
-    <div class="alert alert-warning">
-        Application #@Id was not found.
-        <a href="student-applications" class="alert-link">Back to applications</a>
-    </div>
+    <EmptyState Icon="bi-search" Title="@($"Application #{Id} was not found")">
+        It may have been deleted. <a href="student-applications">Back to applications</a>
+    </EmptyState>
 }
 else
 {
@@ -32,21 +31,11 @@ else
         <ErrorAlert Message="Unable to save changes. Please try again." />
     }
 
-    <div class="card shadow-sm">
-        <div class="card-body">
-            <p class="text-muted mb-4">
-                <i class="bi bi-calendar-event me-1" aria-hidden="true"></i>
-                Application date:
-                @(originalApplicationDate?.ToString("dd MMM yyyy", CultureInfo.InvariantCulture) ?? "Not stored by the API")
-            </p>
-
-            <StudentApplicationForm Model="application"
-                                    SubmitText="Save changes"
-                                    IsSubmitting="isSaving"
-                                    ShowApplicationDate="false"
-                                    OnValidSubmit="HandleSubmitAsync" />
-        </div>
-    </div>
+    <StudentApplicationForm Model="application"
+                            SubmitText="Save changes"
+                            IsSubmitting="isSaving"
+                            ShowApplicationDate="false"
+                            OnValidSubmit="HandleSubmitAsync" />
 }
 
 @code {
@@ -60,6 +49,17 @@ else
     private bool hasLoadError;
     private bool isSaving;
     private bool hasSaveError;
+
+    private string Subtitle
+    {
+        get
+        {
+            var date = originalApplicationDate?.ToString("dd MMM yyyy", CultureInfo.InvariantCulture)
+                       ?? "not stored by the API";
+
+            return $"Application #{Id} · Application date: {date}";
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {

@@ -5,80 +5,117 @@
 <EditForm Model="Model" OnValidSubmit="HandleValidSubmitAsync">
     <DataAnnotationsValidator />
 
-    <div class="row g-3">
-        <div class="col-md-6">
-            <label for="studentName" class="form-label">Student Name</label>
-            <InputText id="studentName" class="form-control" @bind-Value="Model.StudentName" />
-            <ValidationMessage For="() => Model.StudentName" />
+    <div class="card shadow-sm">
+        <div class="card-body p-4">
+            <section class="form-section">
+                <h2 class="form-section-title">
+                    <i class="bi bi-mortarboard" aria-hidden="true"></i>Programme
+                </h2>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="country" class="form-label">Country</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-globe2" aria-hidden="true"></i></span>
+                            <InputText id="country" class="form-control" list="country-options" autocomplete="off"
+                                       @bind-Value="Model.Country"
+                                       @bind-Value:after="LoadUniversitySuggestionsAsync" />
+                        </div>
+                        <datalist id="country-options">
+                            @foreach (var country in countries)
+                            {
+                                <option value="@country.Name"></option>
+                            }
+                        </datalist>
+                        <ValidationMessage For="() => Model.Country" />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="university" class="form-label">University Name</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-building" aria-hidden="true"></i></span>
+                            <InputText id="university" class="form-control" list="university-options" autocomplete="off"
+                                       @bind-Value="Model.UniversityName" />
+                        </div>
+                        <datalist id="university-options">
+                            @foreach (var university in universitySuggestions)
+                            {
+                                <option value="@university.Name"></option>
+                            }
+                        </datalist>
+                        <ValidationMessage For="() => Model.UniversityName" />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="course" class="form-label">Course Name</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-book" aria-hidden="true"></i></span>
+                            <InputText id="course" class="form-control" @bind-Value="Model.CourseName" />
+                        </div>
+                        <ValidationMessage For="() => Model.CourseName" />
+                    </div>
+
+                    @if (ShowApplicationDate)
+                    {
+                        <div class="col-md-6">
+                            <label for="applicationDate" class="form-label">Application Date</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-calendar-event" aria-hidden="true"></i></span>
+                                <InputDate id="applicationDate" class="form-control" @bind-Value="Model.ApplicationDate" />
+                            </div>
+                            <ValidationMessage For="() => Model.ApplicationDate" />
+                        </div>
+                    }
+                </div>
+            </section>
+
+            <section class="form-section">
+                <h2 class="form-section-title">
+                    <i class="bi bi-person" aria-hidden="true"></i>Student
+                </h2>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="studentName" class="form-label">Student Name</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-person" aria-hidden="true"></i></span>
+                            <InputText id="studentName" class="form-control" @bind-Value="Model.StudentName" />
+                        </div>
+                        <ValidationMessage For="() => Model.StudentName" />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="email" class="form-label">Email Address</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-envelope" aria-hidden="true"></i></span>
+                            <InputText id="email" type="email" class="form-control" @bind-Value="Model.Email" />
+                        </div>
+                        <ValidationMessage For="() => Model.Email" />
+                    </div>
+                </div>
+            </section>
+
+            <section class="form-section">
+                <h2 class="form-section-title">
+                    <i class="bi bi-chat-left-text" aria-hidden="true"></i>Personal statement
+                    <span class="text-muted fw-normal small">(optional)</span>
+                </h2>
+                <label for="personalStatement" class="visually-hidden">Personal Statement</label>
+                <InputTextArea id="personalStatement" class="form-control" rows="5"
+                               placeholder="Tell the university why you would like to study this course..."
+                               @bind-Value="Model.PersonalStatement" />
+                <ValidationMessage For="() => Model.PersonalStatement" />
+            </section>
         </div>
 
-        <div class="col-md-6">
-            <label for="email" class="form-label">Email Address</label>
-            <InputText id="email" type="email" class="form-control" @bind-Value="Model.Email" />
-            <ValidationMessage For="() => Model.Email" />
-        </div>
-
-        <div class="col-md-6">
-            <label for="country" class="form-label">Country</label>
-            <InputText id="country" class="form-control" list="country-options" autocomplete="off"
-                       @bind-Value="Model.Country"
-                       @bind-Value:after="LoadUniversitySuggestionsAsync" />
-            <datalist id="country-options">
-                @foreach (var country in countries)
+        <div class="card-footer bg-body-tertiary d-flex justify-content-end gap-2 px-4 py-3">
+            <a href="@CancelUrl" class="btn btn-outline-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary" disabled="@IsSubmitting">
+                @if (IsSubmitting)
                 {
-                    <option value="@country.Name"></option>
+                    <span class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span>
                 }
-            </datalist>
-            <ValidationMessage For="() => Model.Country" />
+                @SubmitText
+            </button>
         </div>
-
-        <div class="col-md-6">
-            <label for="university" class="form-label">University Name</label>
-            <InputText id="university" class="form-control" list="university-options" autocomplete="off"
-                       @bind-Value="Model.UniversityName" />
-            <datalist id="university-options">
-                @foreach (var university in universitySuggestions)
-                {
-                    <option value="@university.Name"></option>
-                }
-            </datalist>
-            <ValidationMessage For="() => Model.UniversityName" />
-        </div>
-
-        <div class="col-md-6">
-            <label for="course" class="form-label">Course Name</label>
-            <InputText id="course" class="form-control" @bind-Value="Model.CourseName" />
-            <ValidationMessage For="() => Model.CourseName" />
-        </div>
-
-        @if (ShowApplicationDate)
-        {
-            <div class="col-md-6">
-                <label for="applicationDate" class="form-label">Application Date</label>
-                <InputDate id="applicationDate" class="form-control" @bind-Value="Model.ApplicationDate" />
-                <ValidationMessage For="() => Model.ApplicationDate" />
-            </div>
-        }
-
-        <div class="col-12">
-            <label for="personalStatement" class="form-label">
-                Personal Statement <span class="text-muted">(optional)</span>
-            </label>
-            <InputTextArea id="personalStatement" class="form-control" rows="4"
-                           @bind-Value="Model.PersonalStatement" />
-            <ValidationMessage For="() => Model.PersonalStatement" />
-        </div>
-    </div>
-
-    <div class="d-flex gap-2 mt-4">
-        <button type="submit" class="btn btn-primary" disabled="@IsSubmitting">
-            @if (IsSubmitting)
-            {
-                <span class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span>
-            }
-            @SubmitText
-        </button>
-        <a href="@CancelUrl" class="btn btn-outline-secondary">Cancel</a>
     </div>
 </EditForm>
 
