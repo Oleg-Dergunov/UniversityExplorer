@@ -31,11 +31,11 @@
 
 .hero-decoration {
     position: absolute;
-    right: 1rem;
-    bottom: -3.5rem;
-    font-size: 15rem;
-    line-height: 1;
-    color: rgba(255, 255, 255, 0.08);
+    right: -1rem;
+    bottom: -2rem;
+    width: 22rem;
+    height: auto;
+    opacity: 0.08;
     pointer-events: none;
 }
 

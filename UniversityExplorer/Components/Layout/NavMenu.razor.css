@@ -164,3 +164,8 @@
 [data-bs-theme="dark"] .theme-when-dark {
     display: inline;
 }
+
+.brand-mark {
+    width: 1.4rem;
+    height: auto;
+}
