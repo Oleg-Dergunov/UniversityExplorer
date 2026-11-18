@@ -165,17 +165,19 @@ dotnet test
 
 ![Home page](screenshots/home.png)
 
+Statistics on the home page:
+
+![Home page statistics](screenshots/home-stats.png)
+
 **University Explorer page**
 
 ![University Explorer page](screenshots/explorer.png)
 
-**Country selected and details displayed**
+**Country selected, country details and universities loaded**
 
-![Country details](screenshots/country-details.png)
+![Country details and universities](screenshots/country-universities.png)
 
-**Universities loaded for a selected country**
-
-![Universities loaded](screenshots/universities.png)
+The country details card (left) and the universities of the selected country (right) are shown on the same page.
 
 **University search**
 
@@ -201,6 +203,10 @@ dotnet test
 
 ![Edit Application](screenshots/edit.png)
 
+After saving, the app returns to the Applications page, shows a confirmation message and highlights the updated row:
+
+![Application updated](screenshots/edit-saved.png)
+
 **Loading state**
 
 ![Loading state](screenshots/loading.png)
@@ -225,9 +231,15 @@ Favourites and settings saved in local storage:
 
 ![Local storage](screenshots/local-storage.png)
 
-Sorting (Z to A) and pagination:
+Sorting (Z to A):
 
-![Sorting and pagination](screenshots/sorting-pagination.png)
+![Sorting Z to A](screenshots/sorting.png)
+
+Pagination of universities and applications:
+
+![Universities pagination](screenshots/pagination-universities.png)
+
+![Applications pagination](screenshots/pagination-applications.png)
 
 Dark mode:
 
